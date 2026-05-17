@@ -1346,10 +1346,16 @@ body, html {
 }
 
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
 </head>
 <body>
     <div class="app-container">
         <div id="map"></div>
+
+<style>
+    #undoBtn:disabled, #redoBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+    #undoBtn:not(:disabled):hover, #redoBtn:not(:disabled):hover { background: rgba(255,255,255,0.2) !important; color: #fb923c !important; border-color: #fb923c !important; }
+</style>
         
         <!-- Màn hình Loading -->
         <div id="loadingOverlay" class="loading-overlay">
@@ -1359,6 +1365,8 @@ body, html {
 
         <!-- Floating Action Buttons (Top Center) -->
         <div class="floating-top-center no-export">
+            <button id="undoBtn" onclick="undoMap()" disabled title="Hoàn tác (Undo) (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
+            <button id="redoBtn" onclick="redoMap()" disabled title="Làm lại (Redo) (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i></button>
             <button onclick="captureMap()" title="Chụp ảnh bản đồ"><i class="fa-solid fa-camera"></i></button>
             <button onclick="toggleMeasure()" title="Thước đo"><i class="fa-solid fa-ruler-combined"></i></button>
             <button id="resetViewBtnMain" onclick="resetToInitialView()" title="Xem toàn bộ"><i class="fa-solid fa-expand"></i></button>
@@ -1407,6 +1415,7 @@ body, html {
                     <button class="tab-btn active" data-tab="tab-map"><i class="fa-solid fa-map"></i> Bản đồ</button>
                     <button class="tab-btn" data-tab="tab-tools"><i class="fa-solid fa-wrench"></i> Công cụ</button>
                     <button class="tab-btn" data-tab="tab-po"><i class="fa-solid fa-truck-fast"></i> Bưu cục</button>
+                    <button class="tab-btn" data-tab="tab-groups"><i class="fa-solid fa-object-group"></i> Nhóm</button>
                     <button class="tab-btn" data-tab="tab-sync"><i class="fa-solid fa-cloud-arrow-up"></i> Đồng bộ</button>
                 </div>
 
@@ -1490,6 +1499,21 @@ body, html {
                     <div id="poQuickList" class="po-quick-list"></div>
                 </div>
 
+                <!-- Tab: Nhóm xã -->
+                <div id="tab-groups" class="tab-content">
+                    <div class="po-sidebar-header">
+                        <i class="fa-solid fa-object-group"></i> DANH SÁCH NHÓM XÃ
+                    </div>
+                    <div style="padding: 10px; margin-bottom: 10px; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">
+                        <span style="color: #60a5fa; font-weight: bold;"><i class="fa-solid fa-lightbulb"></i> Hướng dẫn:</span>
+                        <ul style="margin: 5px 0 0 0; padding-left: 18px;">
+                            <li>Chọn nhiều vùng (Ctrl + Click) -> Lưu Nhóm.</li>
+                            <li>Ctrl + Click vào Nhóm để xem nhiều Nhóm cùng lúc.</li>
+                        </ul>
+                    </div>
+                    <div id="groupsQuickList" class="po-quick-list" style="margin-top: 10px;"></div>
+                </div>
+                
                 <!-- Tab: Đồng bộ Đám mây -->
                 <div id="tab-sync" class="tab-content">
                     <div class="po-sidebar-header">
@@ -1564,9 +1588,6 @@ body, html {
     </div>
 
     <!-- Scripts -->
-    <script>
-    window.embeddedCustomData = {"pos":[{"id":"1","name":"Hố Nai 3 dự kiến","lat":10.965732,"lng":106.931439,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.973571829767256,"lng":106.92386262263437}},{"id":"Chưa có","name":"Bưu cục Lộc An-Long Thành-Đồng Nai","lat":10.798783,"lng":107.002275,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.807530745468247,"lng":106.9977848231746}},{"id":"1319","name":"Bưu Cục 110 Nguyễn Huệ-Trảng Bom-Đồng Nai","lat":10.954539,"lng":107.006643,"isCustom":true,"labelLatLng":{"lat":10.962608589240691,"lng":107.00251875719933}},{"id":"20468000","name":"Bưu Cục Bình Sơn-Long Thành-Đồng Nai","lat":10.7917581,"lng":107.0207285,"isCustom":true},{"id":"22541000","name":"Bưu Cục 146 Nguyễn Văn Cừ-Xã Long Thành-Đồng Nai","lat":10.777742,"lng":106.941705,"isCustom":true},{"id":"20473000","name":"Bưu Cục 68 Quốc Lộ 1A-Trảng Bom-Đồng Nai","lat":10.9553138,"lng":106.9673351,"isCustom":true,"labelLatLng":{"lat":10.95431516706275,"lng":106.96826163088073}},{"id":"21451000","name":"Bưu Cục Khu 6 ấp Bàu Cá-Trung Hòa-Trảng Bom-Đồng Nai","lat":10.945621,"lng":107.061884,"isCustom":true},{"id":"22336000","name":"Bưu Cục Quốc Lộ 1A-Bắc Sơn-Trảng Bom-Đồng Nai","lat":10.956136,"lng":106.965119,"isCustom":true,"labelLatLng":{"lat":10.954626400583397,"lng":106.9355039393712}},{"id":"22927000","name":"Bưu Cục 69 Bàu Cạn-Xã Long Phước-Đồng Nai","lat":10.7193705,"lng":107.0249291,"isCustom":true},{"id":"2429","name":"Bưu Cục Long Phước - Long Thành - Đồng Nai","lat":10.6896227,"lng":107.0443439,"isCustom":true},{"id":"123","name":"Trà Sữa","address":"","lat":10.963307,"lng":106.939582,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.970498876025433,"lng":106.9393080583852}}],"modified":[],"closedIds":[]};
-    </script>
     <script>
     window.embeddedCustomData = {"pos":[{"id":"1","name":"Hố Nai 3 dự kiến","lat":10.965732,"lng":106.931439,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.973571829767256,"lng":106.92386262263437}},{"id":"Chưa có","name":"Bưu cục Lộc An-Long Thành-Đồng Nai","lat":10.798783,"lng":107.002275,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.807530745468247,"lng":106.9977848231746}},{"id":"1319","name":"Bưu Cục 110 Nguyễn Huệ-Trảng Bom-Đồng Nai","lat":10.954539,"lng":107.006643,"isCustom":true,"labelLatLng":{"lat":10.962608589240691,"lng":107.00251875719933}},{"id":"20468000","name":"Bưu Cục Bình Sơn-Long Thành-Đồng Nai","lat":10.7917581,"lng":107.0207285,"isCustom":true},{"id":"22541000","name":"Bưu Cục 146 Nguyễn Văn Cừ-Xã Long Thành-Đồng Nai","lat":10.777742,"lng":106.941705,"isCustom":true},{"id":"20473000","name":"Bưu Cục 68 Quốc Lộ 1A-Trảng Bom-Đồng Nai","lat":10.9553138,"lng":106.9673351,"isCustom":true,"labelLatLng":{"lat":10.95431516706275,"lng":106.96826163088073}},{"id":"21451000","name":"Bưu Cục Khu 6 ấp Bàu Cá-Trung Hòa-Trảng Bom-Đồng Nai","lat":10.945621,"lng":107.061884,"isCustom":true},{"id":"22336000","name":"Bưu Cục Quốc Lộ 1A-Bắc Sơn-Trảng Bom-Đồng Nai","lat":10.956136,"lng":106.965119,"isCustom":true,"labelLatLng":{"lat":10.954626400583397,"lng":106.9355039393712}},{"id":"22927000","name":"Bưu Cục 69 Bàu Cạn-Xã Long Phước-Đồng Nai","lat":10.7193705,"lng":107.0249291,"isCustom":true},{"id":"2429","name":"Bưu Cục Long Phước - Long Thành - Đồng Nai","lat":10.6896227,"lng":107.0443439,"isCustom":true},{"id":"123","name":"Trà Sữa","address":"","lat":10.963307,"lng":106.939582,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.970498876025433,"lng":106.9393080583852}}],"modified":[],"closedIds":[]};
     </script>
@@ -1921,6 +1942,12 @@ async function loadProvinceData(provinceName) {
 }
 
 function updateDataSource() {
+    // Xóa lựa chọn Nhóm xã cũ khi đổi nguồn
+    if (typeof window.selectedGroups !== 'undefined') {
+        window.selectedGroups.clear();
+        if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
+        if (typeof renderGroupsList === 'function') renderGroupsList();
+    }
     provincialDataCache = {}; // Xóa cache để nạp lại dữ liệu
     
     // Xóa các layers hiện tại để bắt nạp lại
@@ -1940,6 +1967,12 @@ function updateDataSource() {
 }
 
 function updateDataSource() {
+    // Xóa lựa chọn Nhóm xã cũ khi đổi nguồn
+    if (typeof window.selectedGroups !== 'undefined') {
+        window.selectedGroups.clear();
+        if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
+        if (typeof renderGroupsList === 'function') renderGroupsList();
+    }
     provincialDataCache = {}; // Xóa cache để nạp lại dữ liệu
     
     // Xóa các layers hiện tại để bắt nạp lại
@@ -1959,6 +1992,12 @@ function updateDataSource() {
 }
 
 function updateDataSource() {
+    // Xóa lựa chọn Nhóm xã cũ khi đổi nguồn
+    if (typeof window.selectedGroups !== 'undefined') {
+        window.selectedGroups.clear();
+        if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
+        if (typeof renderGroupsList === 'function') renderGroupsList();
+    }
     provincialDataCache = {}; // Xóa cache để nạp lại dữ liệu
     
     // Xóa các layers hiện tại để bắt nạp lại
@@ -2625,6 +2664,13 @@ function selectFeature(e) {
         map.flyToBounds(bounds, { padding: [40, 40], duration: 1.2 });
     }
     updateSidebar(selectedFeatures);
+    
+        if (typeof window.selectedGroups !== 'undefined' && window.selectedGroups.size > 0) {
+            window.selectedGroups.clear();
+            if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
+            if (typeof renderGroupsList === 'function') renderGroupsList();
+        }
+        if (typeof pushUndoState === "function") pushUndoState();
 }
 
 function applySelectedStyle(layer) {
@@ -2701,6 +2747,11 @@ function updateSidebar(selectedSet) {
                     <div class="info-row" style="flex: 1;"><span class="info-label">Tổng Diện Tích</span><span class="info-value highlight">${formatNumber(parseFloat(totalArea.toFixed(2)))} km²</span></div>
                     <div class="info-row" style="flex: 1;"><span class="info-label">Tổng Dân Số</span><span class="info-value highlight">${formatNumber(totalPop)} người</span></div>
                 </div>
+                <div style="margin-top: 15px;">
+                    <button class="action-btn" style="width: 100%; background: #3b82f6; border-color: #2563eb; color: white;" onclick="promptCreateGroup()">
+                        <i class="fa-solid fa-object-group"></i> Lưu các vùng đã chọn thành Nhóm
+                    </button>
+                </div>
             </div>
         `;
         infoPanel.innerHTML = html;
@@ -2713,6 +2764,13 @@ function updateSidebar(selectedSet) {
             }
         });
         selectedFeatures.clear();
+        
+        if (typeof window.selectedGroups !== 'undefined' && window.selectedGroups.size > 0) {
+            window.selectedGroups.clear();
+            if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
+            if (typeof renderGroupsList === 'function') renderGroupsList();
+        }
+        if (typeof pushUndoState === "function") pushUndoState();
     });
 
 }
@@ -3199,7 +3257,7 @@ function updateSyncStatus(status, text) {
 }
 
 // Quản lý PO tự thêm (LocalStorage / Cloud Sync / Data Bridge)
-async function saveToLocalStorage() {
+async function _originalSaveToLocalStorage() {
     const customPOs = postOffices.filter(po => po.isCustom);
     const modifiedPOs = postOffices.filter(po => po.isModified).map(po => {
         return {
@@ -3891,6 +3949,370 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
 </div>
+
+
+<!-- LOGIC UNDO REDO -->
+<script>
+let undoStack = [];
+let redoStack = [];
+let isUndoRedoRunning = false;
+
+function pushUndoState() {
+    if (isUndoRedoRunning || typeof postOffices === 'undefined') return;
+    
+    // Lấy trạng thái hiện tại (chỉ custom và modified)
+    const customPOs = postOffices.filter(po => po.isCustom);
+    const modifiedPOs = postOffices.filter(po => po.isModified).map(po => ({
+        id: po.id, name: po.name, lat: po.lat, lng: po.lng, manager: po.manager, phone: po.phone, address: po.address, labelLatLng: po.labelLatLng
+    }));
+    const closedArr = (typeof window !== 'undefined' && window.closedPoIds) ? Array.from(window.closedPoIds) : [];
+    
+    const selectedWardsArr = (typeof selectedFeatures !== 'undefined' && selectedFeatures.size > 0) 
+        ? Array.from(selectedFeatures).map(layer => layer.feature.properties.ma_xa || layer.feature.properties.ten_xa) 
+        : [];
+    
+    const state = JSON.stringify({
+        pos: customPOs,
+        modified: modifiedPOs,
+        closedIds: closedArr,
+        selectedWards: selectedWardsArr
+    });
+    
+    // So sánh với state cuối cùng, nếu khác thì mới push
+    if (undoStack.length === 0 || undoStack[undoStack.length - 1] !== state) {
+        undoStack.push(state);
+        redoStack = []; // Reset redo stack khi có action mới
+        if (undoStack.length > 30) undoStack.shift(); // Giới hạn 30 bước
+    }
+    updateUndoRedoUI();
+}
+
+function updateUndoRedoUI() {
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    if (undoBtn) undoBtn.disabled = undoStack.length <= 1; 
+    if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+}
+
+async function undoMap() {
+    if (undoStack.length <= 1) return;
+    isUndoRedoRunning = true;
+    
+    const currentStateStr = undoStack.pop();
+    redoStack.push(currentStateStr);
+    
+    const prevStateStr = undoStack[undoStack.length - 1];
+    await applyMapState(JSON.parse(prevStateStr));
+    
+    isUndoRedoRunning = false;
+    updateUndoRedoUI();
+}
+
+async function redoMap() {
+    if (redoStack.length === 0) return;
+    isUndoRedoRunning = true;
+    
+    const nextStateStr = redoStack.pop();
+    undoStack.push(nextStateStr);
+    
+    await applyMapState(JSON.parse(nextStateStr));
+    
+    isUndoRedoRunning = false;
+    updateUndoRedoUI();
+}
+
+async function applyMapState(deltaData) {
+    if (typeof basePostOffices !== 'undefined') {
+        postOffices = mergeMarkerData(basePostOffices, deltaData);
+    } else {
+        postOffices = deltaData.pos || [];
+        window.closedPoIds = new Set(deltaData.closedIds || []);
+    }
+    
+    // Cập nhật lên bản đồ
+    if (typeof updatePostOfficesByProvince === 'function') {
+        updatePostOfficesByProvince();
+    }
+    
+    // --- Khôi phục vùng chọn ---
+    if (typeof selectedFeatures !== 'undefined') {
+        // Xóa highlight hiện tại
+        selectedFeatures.forEach(layer => {
+            if (layer.parentProvinceLayer) {
+                layer.parentProvinceLayer.resetStyle(layer);
+            }
+        });
+        selectedFeatures.clear();
+
+        // Highlight lại các xã đã lưu trong state
+        const targetIds = deltaData.selectedWards || [];
+        if (targetIds.length > 0) {
+            Object.values(provincialLayers).forEach(provinceLayer => {
+                provinceLayer.eachLayer(function(layer) {
+                    const layerId = layer.feature.properties.ma_xa || layer.feature.properties.ten_xa;
+                    if (targetIds.includes(layerId)) {
+                        selectedFeatures.add(layer);
+                        if (typeof applySelectedStyle === 'function') applySelectedStyle(layer);
+                    }
+                });
+            });
+        }
+        
+        // Cập nhật giao diện Sidebar
+        if (typeof updateSidebar === 'function') {
+            updateSidebar(selectedFeatures);
+    
+        if (typeof window.selectedGroups !== 'undefined' && window.selectedGroups.size > 0) {
+            window.selectedGroups.clear();
+            if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
+            if (typeof renderGroupsList === 'function') renderGroupsList();
+        }
+        if (typeof pushUndoState === "function") pushUndoState();
+}
+    }
+    
+    // Lưu ngược lại storage nhưng KHÔNG push undo state (vì isUndoRedoRunning = true)
+    if (typeof _originalSaveToLocalStorage === 'function') {
+        await _originalSaveToLocalStorage();
+    }
+}
+
+// Hàm saveToLocalStorage mới, bọc hàm cũ
+async function saveToLocalStorage() {
+    // 1. Lưu state trước
+    pushUndoState();
+    // 2. Gọi logic lưu thật
+    if (typeof _originalSaveToLocalStorage === 'function') {
+        await _originalSaveToLocalStorage();
+    }
+}
+
+// Bắt sự kiện load lần đầu để lưu state gốc
+document.addEventListener('DOMContentLoaded', () => {
+    // Đợi 2 giây sau khi khởi tạo để đảm bảo dữ liệu loadFromLocalStorage đã xong
+    setTimeout(() => {
+        pushUndoState();
+    }, 2000);
+});
+</script>
+
+<!-- THÊM CHỨC NĂNG NHÓM XÃ -->
+<script>
+    window.mapAreaGroups = JSON.parse(localStorage.getItem('mapAreaGroups')) || [];
+    window.selectedGroups = new Set();
+    
+    // Gắn layer boundary sau khi map đã tạo
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof map !== 'undefined') {
+            window.groupBoundaryLayer = L.layerGroup().addTo(map);
+        }
+        setTimeout(() => { renderGroupsList(); }, 1000); 
+    });
+
+    function saveAreaGroups() {
+        localStorage.setItem('mapAreaGroups', JSON.stringify(window.mapAreaGroups));
+        renderGroupsList();
+    }
+
+    function promptCreateGroup() {
+        if (!selectedFeatures || selectedFeatures.size === 0) return;
+        
+        const name = prompt("Nhập tên cho nhóm xã này:", "Khu vực mới");
+        if (!name) return;
+
+        // Lưu danh sách mã xã
+        const communes = Array.from(selectedFeatures).map(layer => {
+            return {
+                id: layer.feature.properties.ma_xa,
+                name: layer.feature.properties.ten_xa
+            };
+        }).filter(c => c.id);
+
+        if (communes.length === 0) {
+            return showToast("Không tìm thấy mã xã hợp lệ để tạo nhóm.", "error");
+        }
+
+        const newGroup = {
+            id: 'g_' + new Date().getTime(),
+            name: name,
+            color: '#ef4444', // Red default
+            communes: communes,
+            dataSource: document.getElementById('dataSourceSelect') ? document.getElementById('dataSourceSelect').value : 'legacy'
+        };
+
+        window.mapAreaGroups.push(newGroup);
+        saveAreaGroups();
+        showToast("Đã tạo nhóm thành công!", "success");
+        
+        // Chuyển sang tab nhóm luôn cho người dùng xem
+        const tabGroupsBtn = document.querySelector('.tab-btn[data-tab="tab-groups"]');
+        if (tabGroupsBtn) tabGroupsBtn.click();
+    }
+
+    function renderGroupsList() {
+        const list = document.getElementById('groupsQuickList');
+        if (!list) return;
+
+        const currentDS = document.getElementById('dataSourceSelect') ? document.getElementById('dataSourceSelect').value : 'legacy';
+        const visibleGroups = window.mapAreaGroups.filter(g => !g.dataSource || g.dataSource === currentDS);
+
+        if (visibleGroups.length === 0) {
+            list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">Chưa có nhóm nào.</div>';
+            return;
+        }
+
+        list.innerHTML = visibleGroups.map(g => {
+            const isSelected = window.selectedGroups.has(g.id);
+            return `
+                <div class="po-list-item ${isSelected ? 'active' : ''}" style="display: flex; justify-content: space-between; align-items: center; padding-right: 8px;" onclick="clickGroup(event, '${g.id}')">
+                    <div style="flex: 1;">
+                        <div class="po-list-title" style="color: ${g.color || '#fff'}; font-size: 0.95rem; font-weight: 700; margin-bottom: 2px;"><i class="fa-solid fa-object-group"></i> ${g.name}</div>
+                        <div class="po-list-subtitle" style="font-size: 0.75rem;"><i class="fa-solid fa-layer-group"></i> ${g.communes.length} xã/phường được chọn</div>
+                    </div>
+                    <div style="display: flex; gap: 6px; align-items: center;" onclick="event.stopPropagation()">
+                        <div style="width: 24px; height: 24px; border-radius: 50%; overflow: hidden; border: 2px solid var(--border-color); flex-shrink: 0;">
+                            <input type="color" value="${g.color}" style="width: 40px; height: 40px; margin: -8px; cursor: pointer; background: transparent; border: none;" onchange="updateGroupColor('${g.id}', this.value)" title="Đổi màu">
+                        </div>
+                        <button class="action-btn" onclick="editGroupName('${g.id}')" style="width: 26px; height: 26px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.4); color: #60a5fa;" title="Đổi tên"><i class="fa-solid fa-pen" style="font-size: 0.7rem;"></i></button>
+                        <button class="action-btn" onclick="deleteGroup('${g.id}')" style="width: 26px; height: 26px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #f87171;" title="Xóa nhóm"><i class="fa-solid fa-trash" style="font-size: 0.7rem;"></i></button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function clickGroup(e, groupId) {
+        const isMultiSelect = e.ctrlKey || e.metaKey;
+        if (!isMultiSelect) {
+            window.selectedGroups.clear();
+            
+            // Clear map selection
+            if (typeof selectedFeatures !== 'undefined') {
+                selectedFeatures.forEach(l => {
+                    if (l.parentProvinceLayer) l.parentProvinceLayer.resetStyle(l);
+                });
+                selectedFeatures.clear();
+            }
+    // Thêm: Xóa selection của Nhóm khi click ra ngoài
+    if (typeof window.selectedGroups !== 'undefined' && window.selectedGroups.size > 0) {
+        window.selectedGroups.clear();
+        if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
+        if (typeof renderGroupsList === 'function') renderGroupsList();
+    }
+        }
+
+        if (isMultiSelect && window.selectedGroups.has(groupId)) {
+            window.selectedGroups.delete(groupId);
+            // We should ideally unselect its features from the map, but it's complex if features overlap.
+            // For simplicity, we just clear and rebuild below if needed, or leave it.
+        } else {
+            window.selectedGroups.add(groupId);
+        }
+
+        // Sync with map selectedFeatures
+        const group = window.mapAreaGroups.find(x => x.id === groupId);
+        if (group && typeof selectedFeatures !== 'undefined') {
+            Object.values(provincialLayers).forEach(provinceLayer => {
+                provinceLayer.eachLayer(layer => {
+                    if (group.communes.some(c => c.id === layer.feature.properties.ma_xa)) {
+                        selectedFeatures.add(layer);
+                        if (typeof applySelectedStyle === 'function') applySelectedStyle(layer);
+                    }
+                });
+            });
+            if (typeof updateSidebar === 'function') updateSidebar(selectedFeatures);
+        }
+
+        renderGroupsList();
+        drawSelectedGroups();
+    }
+
+    function updateGroupColor(id, color) {
+        const g = window.mapAreaGroups.find(x => x.id === id);
+        if (g) {
+            g.color = color;
+            saveAreaGroups();
+            drawSelectedGroups();
+        }
+    }
+
+    function editGroupName(id) {
+        const g = window.mapAreaGroups.find(x => x.id === id);
+        if (g) {
+            const newName = prompt("Nhập tên mới:", g.name);
+            if (newName && newName !== g.name) {
+                g.name = newName;
+                saveAreaGroups();
+            }
+        }
+    }
+
+    function deleteGroup(id) {
+        if (confirm("Bạn có chắc chắn muốn xóa nhóm này?")) {
+            window.mapAreaGroups = window.mapAreaGroups.filter(x => x.id !== id);
+            window.selectedGroups.delete(id);
+            saveAreaGroups();
+            drawSelectedGroups();
+        }
+    }
+
+    function drawSelectedGroups() {
+        if (!window.groupBoundaryLayer) return;
+        window.groupBoundaryLayer.clearLayers();
+        
+        if (window.selectedGroups.size === 0) return;
+
+        let allBounds = L.latLngBounds();
+
+        window.selectedGroups.forEach(groupId => {
+            const group = window.mapAreaGroups.find(x => x.id === groupId);
+            if (!group) return;
+
+            const featuresToMerge = [];
+            Object.values(provincialLayers).forEach(provinceLayer => {
+                provinceLayer.eachLayer(layer => {
+                    if (group.communes.some(c => c.id === layer.feature.properties.ma_xa)) {
+                        featuresToMerge.push(layer.feature);
+                    }
+                });
+            });
+
+            if (featuresToMerge.length > 0) {
+                let finalGeojson;
+                try {
+                    // Dùng turf để gộp thành 1 đa giác viền ngoài duy nhất
+                    let mergedPolygon = featuresToMerge[0];
+                    for (let i = 1; i < featuresToMerge.length; i++) {
+                        mergedPolygon = turf.union(mergedPolygon, featuresToMerge[i]);
+                    }
+                    finalGeojson = mergedPolygon;
+                } catch (e) {
+                    console.error("Lỗi khi dùng Turf.js gộp ranh giới:", e);
+                    // Fallback: Nếu Turf lỗi, vẽ nguyên cả cụm
+                    finalGeojson = featuresToMerge;
+                }
+
+                const boundaryLayer = L.geoJSON(finalGeojson, {
+                    style: {
+                        color: group.color || '#ef4444',
+                        weight: 6,          // Viền rất đậm để thấy rõ
+                        opacity: 1,
+                        fillOpacity: 0.1,   // Nền rất nhạt để ranh giới bên trong (của xã) không bị lấp
+                        dashArray: '10, 5'  // Nét đứt to để dễ phân biệt
+                    },
+                    interactive: false // Bỏ qua sự kiện click chuột
+                });
+
+                window.groupBoundaryLayer.addLayer(boundaryLayer);
+                allBounds.extend(boundaryLayer.getBounds());
+            }
+        });
+
+        if (allBounds.isValid()) {
+            map.flyToBounds(allBounds, { padding: [50, 50], duration: 1.5 });
+        }
+    }
+</script>
 
 </body>
 </html>
