@@ -1495,40 +1495,43 @@ body, html {
                     <div class="po-sidebar-header">
                         <i class="fa-solid fa-cloud"></i> ĐỒNG BỘ ĐÁM MÂY
                     </div>
-                    <div class="control-group" style="margin-top: 15px;">
-                        <label><i class="fa-solid fa-link"></i> LINK GOOGLE SHEETS WEB APP</label>
-                        <input type="text" id="cloudSyncUrl" class="custom-select" style="background: rgba(15,23,42,0.5); color: white; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; box-sizing: border-box; width: 100%; font-size: 0.85rem;" placeholder="https://script.google.com/macros/s/.../exec">
-                    </div>
-                    <div style="display: flex; gap: 8px; margin-top: 10px;">
-                        <button id="saveSyncUrlBtn" class="action-btn" style="background: #10b981; border-color: #059669; color: white; width: auto; padding: 8px 16px;"><i class="fa-solid fa-floppy-disk"></i> Lưu link</button>
-                        <button id="forceSyncBtn" class="action-btn" style="background: #3b82f6; border-color: #2563eb; color: white; width: auto; padding: 8px 16px;"><i class="fa-solid fa-rotate"></i> Đồng bộ ngay</button>
-                    </div>
-                    <div class="sync-status-card" style="margin-top: 15px; padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); font-size: 0.85rem; line-height: 1.6;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <span>Trạng thái:</span>
-                            <span id="syncStatusBadge" style="padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #64748b; color: white;">Chưa thiết lập</span>
+                    
+                    <div class="main-control-panel">
+                        <div class="control-group">
+                            <label><i class="fa-solid fa-link"></i> LINK GOOGLE SHEETS WEB APP</label>
+                            <input type="text" id="cloudSyncUrl" class="custom-select" style="background: rgba(15,23,42,0.5); color: white; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; box-sizing: border-box; width: 100%; font-size: 0.85rem;" placeholder="https://script.google.com/macros/s/.../exec">
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <span>Đồng bộ lần cuối:</span>
-                            <span id="lastSyncedTime" style="color: var(--text-secondary);">Chưa có</span>
+                        <div style="display: flex; gap: 8px; margin-top: 5px; margin-bottom: 15px;">
+                            <button id="saveSyncUrlBtn" class="action-btn" style="background: #10b981; border-color: #059669; color: white; width: auto; padding: 8px 16px; font-size: 0.85rem;"><i class="fa-solid fa-floppy-disk"></i> Lưu link</button>
+                            <button id="forceSyncBtn" class="action-btn" style="background: #3b82f6; border-color: #2563eb; color: white; width: auto; padding: 8px 16px; font-size: 0.85rem;"><i class="fa-solid fa-rotate"></i> Đồng bộ ngay</button>
                         </div>
-                        <div style="border-top: 1px dashed var(--border-color); margin: 8px 0; padding-top: 8px;">
-                            <span style="color: #fb923c; font-weight: bold;"><i class="fa-solid fa-circle-info"></i> Lợi ích của Đồng bộ:</span>
-                            <ul style="margin: 5px 0 0 0; padding-left: 18px; color: var(--text-secondary); font-size: 0.8rem;">
-                                <li>Dùng chung dữ liệu bưu cục với đồng nghiệp thời gian thực.</li>
-                                <li>Bảo vệ dữ liệu không bị mất khi xóa lịch sử trình duyệt.</li>
-                                <li>Quản lý danh sách trực tiếp trên Google Sheets dễ dàng.</li>
-                            </ul>
+                        <div class="sync-status-card" style="padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); font-size: 0.85rem; line-height: 1.6; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span>Trạng thái:</span>
+                                <span id="syncStatusBadge" style="padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #64748b; color: white;">Chưa thiết lập</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span>Đồng bộ lần cuối:</span>
+                                <span id="lastSyncedTime" style="color: var(--text-secondary);">Chưa có</span>
+                            </div>
+                            <div style="border-top: 1px dashed var(--border-color); margin: 8px 0; padding-top: 8px;">
+                                <span style="color: #fb923c; font-weight: bold;"><i class="fa-solid fa-circle-info"></i> Lợi ích của Đồng bộ:</span>
+                                <ul style="margin: 5px 0 0 0; padding-left: 18px; color: var(--text-secondary); font-size: 0.8rem;">
+                                    <li>Dùng chung dữ liệu bưu cục với đồng nghiệp thời gian thực.</li>
+                                    <li>Bảo vệ dữ liệu không bị mất khi xóa lịch sử trình duyệt.</li>
+                                    <li>Quản lý danh sách trực tiếp trên Google Sheets dễ dàng.</li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                    <div style="margin-top: 15px; padding: 10px; border-radius: 8px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">
-                        <span style="color: #fb923c; font-weight: bold;"><i class="fa-solid fa-circle-play"></i> Hướng dẫn thiết lập:</span>
-                        <ol style="margin: 5px 0 0 0; padding-left: 15px;">
-                            <li>Bấm nút **"Xem hướng dẫn"** để lấy mã code Apps Script.</li>
-                            <li>Tạo Google Sheets, dán code và Deploy dưới dạng **Web App**.</li>
-                            <li>Dán link Web App vào ô trên và bấm **Lưu link**.</li>
-                        </ol>
-                        <button id="openSyncGuideBtn" class="action-btn" style="background: rgba(249,115,22,0.2); border-color: rgba(249,115,22,0.4); color: #fb923c; margin-top: 8px; width: 100%;"><i class="fa-solid fa-book-open"></i> Xem Hướng dẫn & Mã Code</button>
+                        <div style="padding: 10px; border-radius: 8px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">
+                            <span style="color: #fb923c; font-weight: bold;"><i class="fa-solid fa-circle-play"></i> Hướng dẫn thiết lập:</span>
+                            <ol style="margin: 5px 0 0 0; padding-left: 15px; margin-bottom: 8px;">
+                                <li>Bấm nút dưới đây để lấy mã code Apps Script.</li>
+                                <li>Tạo Google Sheets, dán code và Deploy dưới dạng **Web App**.</li>
+                                <li>Dán link Web App vào ô trên và bấm **Lưu link**.</li>
+                            </ol>
+                            <button id="openSyncGuideBtn" class="action-btn" style="background: rgba(249,115,22,0.2); border-color: rgba(249,115,22,0.4); color: #fb923c; width: 100%; font-size: 0.85rem;"><i class="fa-solid fa-book-open"></i> Xem Hướng dẫn & Mã Code</button>
+                        </div>
                     </div>
                 </div>
             </div>
