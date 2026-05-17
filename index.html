@@ -1407,6 +1407,7 @@ body, html {
                     <button class="tab-btn active" data-tab="tab-map"><i class="fa-solid fa-map"></i> Bản đồ</button>
                     <button class="tab-btn" data-tab="tab-tools"><i class="fa-solid fa-wrench"></i> Công cụ</button>
                     <button class="tab-btn" data-tab="tab-po"><i class="fa-solid fa-truck-fast"></i> Bưu cục</button>
+                    <button class="tab-btn" data-tab="tab-sync"><i class="fa-solid fa-cloud-arrow-up"></i> Đồng bộ</button>
                 </div>
 
                 <!-- Tab: Bản đồ -->
@@ -1488,6 +1489,48 @@ body, html {
                     </div>
                     <div id="poQuickList" class="po-quick-list"></div>
                 </div>
+
+                <!-- Tab: Đồng bộ Đám mây -->
+                <div id="tab-sync" class="tab-content">
+                    <div class="po-sidebar-header">
+                        <i class="fa-solid fa-cloud"></i> ĐỒNG BỘ ĐÁM MÂY
+                    </div>
+                    <div class="control-group" style="margin-top: 15px;">
+                        <label><i class="fa-solid fa-link"></i> LINK GOOGLE SHEETS WEB APP</label>
+                        <input type="text" id="cloudSyncUrl" class="custom-select" style="background: rgba(15,23,42,0.5); color: white; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; box-sizing: border-box; width: 100%; font-size: 0.85rem;" placeholder="https://script.google.com/macros/s/.../exec">
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button id="saveSyncUrlBtn" class="action-btn" style="background: #10b981; border-color: #059669; color: white; width: auto; padding: 8px 16px;"><i class="fa-solid fa-floppy-disk"></i> Lưu link</button>
+                        <button id="forceSyncBtn" class="action-btn" style="background: #3b82f6; border-color: #2563eb; color: white; width: auto; padding: 8px 16px;"><i class="fa-solid fa-rotate"></i> Đồng bộ ngay</button>
+                    </div>
+                    <div class="sync-status-card" style="margin-top: 15px; padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); font-size: 0.85rem; line-height: 1.6;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span>Trạng thái:</span>
+                            <span id="syncStatusBadge" style="padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #64748b; color: white;">Chưa thiết lập</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span>Đồng bộ lần cuối:</span>
+                            <span id="lastSyncedTime" style="color: var(--text-secondary);">Chưa có</span>
+                        </div>
+                        <div style="border-top: 1px dashed var(--border-color); margin: 8px 0; padding-top: 8px;">
+                            <span style="color: #fb923c; font-weight: bold;"><i class="fa-solid fa-circle-info"></i> Lợi ích của Đồng bộ:</span>
+                            <ul style="margin: 5px 0 0 0; padding-left: 18px; color: var(--text-secondary); font-size: 0.8rem;">
+                                <li>Dùng chung dữ liệu bưu cục với đồng nghiệp thời gian thực.</li>
+                                <li>Bảo vệ dữ liệu không bị mất khi xóa lịch sử trình duyệt.</li>
+                                <li>Quản lý danh sách trực tiếp trên Google Sheets dễ dàng.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 10px; border-radius: 8px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">
+                        <span style="color: #fb923c; font-weight: bold;"><i class="fa-solid fa-circle-play"></i> Hướng dẫn thiết lập:</span>
+                        <ol style="margin: 5px 0 0 0; padding-left: 15px;">
+                            <li>Bấm nút **"Xem hướng dẫn"** để lấy mã code Apps Script.</li>
+                            <li>Tạo Google Sheets, dán code và Deploy dưới dạng **Web App**.</li>
+                            <li>Dán link Web App vào ô trên và bấm **Lưu link**.</li>
+                        </ol>
+                        <button id="openSyncGuideBtn" class="action-btn" style="background: rgba(249,115,22,0.2); border-color: rgba(249,115,22,0.4); color: #fb923c; margin-top: 8px; width: 100%;"><i class="fa-solid fa-book-open"></i> Xem Hướng dẫn & Mã Code</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1518,9 +1561,6 @@ body, html {
     </div>
 
     <!-- Scripts -->
-    <script>
-    window.embeddedCustomData = {"pos":[{"id":"1","name":"Hố Nai 3 dự kiến","lat":10.965732,"lng":106.931439,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.973571829767256,"lng":106.92386262263437}},{"id":"Chưa có","name":"Bưu cục Lộc An-Long Thành-Đồng Nai","lat":10.798783,"lng":107.002275,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.807530745468247,"lng":106.9977848231746}},{"id":"1319","name":"Bưu Cục 110 Nguyễn Huệ-Trảng Bom-Đồng Nai","lat":10.954539,"lng":107.006643,"isCustom":true,"labelLatLng":{"lat":10.962608589240691,"lng":107.00251875719933}},{"id":"20468000","name":"Bưu Cục Bình Sơn-Long Thành-Đồng Nai","lat":10.7917581,"lng":107.0207285,"isCustom":true},{"id":"22541000","name":"Bưu Cục 146 Nguyễn Văn Cừ-Xã Long Thành-Đồng Nai","lat":10.777742,"lng":106.941705,"isCustom":true},{"id":"20473000","name":"Bưu Cục 68 Quốc Lộ 1A-Trảng Bom-Đồng Nai","lat":10.9553138,"lng":106.9673351,"isCustom":true,"labelLatLng":{"lat":10.95431516706275,"lng":106.96826163088073}},{"id":"21451000","name":"Bưu Cục Khu 6 ấp Bàu Cá-Trung Hòa-Trảng Bom-Đồng Nai","lat":10.945621,"lng":107.061884,"isCustom":true},{"id":"22336000","name":"Bưu Cục Quốc Lộ 1A-Bắc Sơn-Trảng Bom-Đồng Nai","lat":10.956136,"lng":106.965119,"isCustom":true,"labelLatLng":{"lat":10.954626400583397,"lng":106.9355039393712}},{"id":"22927000","name":"Bưu Cục 69 Bàu Cạn-Xã Long Phước-Đồng Nai","lat":10.7193705,"lng":107.0249291,"isCustom":true},{"id":"2429","name":"Bưu Cục Long Phước - Long Thành - Đồng Nai","lat":10.6896227,"lng":107.0443439,"isCustom":true},{"id":"123","name":"Trà Sữa","address":"","lat":10.963307,"lng":106.939582,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.970498876025433,"lng":106.9393080583852}}],"modified":[],"closedIds":[]};
-    </script>
     <script>
     window.embeddedCustomData = {"pos":[{"id":"1","name":"Hố Nai 3 dự kiến","lat":10.965732,"lng":106.931439,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.973571829767256,"lng":106.92386262263437}},{"id":"Chưa có","name":"Bưu cục Lộc An-Long Thành-Đồng Nai","lat":10.798783,"lng":107.002275,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.807530745468247,"lng":106.9977848231746}},{"id":"1319","name":"Bưu Cục 110 Nguyễn Huệ-Trảng Bom-Đồng Nai","lat":10.954539,"lng":107.006643,"isCustom":true,"labelLatLng":{"lat":10.962608589240691,"lng":107.00251875719933}},{"id":"20468000","name":"Bưu Cục Bình Sơn-Long Thành-Đồng Nai","lat":10.7917581,"lng":107.0207285,"isCustom":true},{"id":"22541000","name":"Bưu Cục 146 Nguyễn Văn Cừ-Xã Long Thành-Đồng Nai","lat":10.777742,"lng":106.941705,"isCustom":true},{"id":"20473000","name":"Bưu Cục 68 Quốc Lộ 1A-Trảng Bom-Đồng Nai","lat":10.9553138,"lng":106.9673351,"isCustom":true,"labelLatLng":{"lat":10.95431516706275,"lng":106.96826163088073}},{"id":"21451000","name":"Bưu Cục Khu 6 ấp Bàu Cá-Trung Hòa-Trảng Bom-Đồng Nai","lat":10.945621,"lng":107.061884,"isCustom":true},{"id":"22336000","name":"Bưu Cục Quốc Lộ 1A-Bắc Sơn-Trảng Bom-Đồng Nai","lat":10.956136,"lng":106.965119,"isCustom":true,"labelLatLng":{"lat":10.954626400583397,"lng":106.9355039393712}},{"id":"22927000","name":"Bưu Cục 69 Bàu Cạn-Xã Long Phước-Đồng Nai","lat":10.7193705,"lng":107.0249291,"isCustom":true},{"id":"2429","name":"Bưu Cục Long Phước - Long Thành - Đồng Nai","lat":10.6896227,"lng":107.0443439,"isCustom":true},{"id":"123","name":"Trà Sữa","address":"","lat":10.963307,"lng":106.939582,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.970498876025433,"lng":106.9393080583852}}],"modified":[],"closedIds":[]};
     </script>
@@ -3124,13 +3164,38 @@ function importCustomPOs(event) {
     reader.readAsText(file);
 }
 
-// Quản lý PO tự thêm (LocalStorage)
-// Quản lý PO tự thêm (Data Bridge / LocalStorage Fallback)
+// Biến cấu hình Cloud Sync
+window.cloudSyncUrl = localStorage.getItem('ghn_cloud_sync_url') || '';
+
+function updateSyncStatus(status, text) {
+    const badge = document.getElementById('syncStatusBadge');
+    const lastTime = document.getElementById('lastSyncedTime');
+    if (!badge) return;
+
+    badge.innerText = text;
+    if (status === 'synced') {
+        badge.style.background = '#10b981'; // Green
+        badge.style.color = 'white';
+        if (lastTime) {
+            const now = new Date();
+            lastTime.innerText = now.toLocaleTimeString() + ' ' + now.toLocaleDateString();
+        }
+    } else if (status === 'syncing') {
+        badge.style.background = '#fb923c'; // Orange
+        badge.style.color = 'white';
+    } else if (status === 'error') {
+        badge.style.background = '#ef4444'; // Red
+        badge.style.color = 'white';
+    } else {
+        badge.style.background = '#64748b'; // Slate
+        badge.style.color = 'white';
+    }
+}
+
+// Quản lý PO tự thêm (LocalStorage / Cloud Sync / Data Bridge)
 async function saveToLocalStorage() {
-    // Chỉ lưu những thay đổi so với dữ liệu gốc (Delta Persistence)
     const customPOs = postOffices.filter(po => po.isCustom);
     const modifiedPOs = postOffices.filter(po => po.isModified).map(po => {
-        // Chỉ lưu các trường quan trọng đã thay đổi
         return {
             id: po.id,
             name: po.name,
@@ -3149,7 +3214,36 @@ async function saveToLocalStorage() {
         closedIds: Array.from(window.closedPoIds)
     };
 
-    // 1. Thử lưu qua Data Bridge (Node.js)
+    // 1. Luôn lưu vào LocalStorage cục bộ để đề phòng offline
+    localStorage.setItem('ghn_map_delta', JSON.stringify(deltaData));
+
+    // 2. Thử đồng bộ lên đám mây (Google Sheets Web App) nếu có cấu hình
+    if (window.cloudSyncUrl) {
+        updateSyncStatus('syncing', 'Đang đồng bộ...');
+        try {
+            const response = await fetch(window.cloudSyncUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(deltaData)
+            });
+            if (response.ok) {
+                const resData = await response.json();
+                if (resData && resData.success) {
+                    console.log('✅ Đã đồng bộ lên đám mây thành công!');
+                    updateSyncStatus('synced', 'Đã đồng bộ');
+                    showToast('Đã tự động đồng bộ lên Google Sheets!', 'success');
+                    return;
+                }
+            }
+            throw new Error('Lỗi từ Google Apps Script');
+        } catch (e) {
+            console.error('❌ Lỗi đồng bộ đám mây:', e);
+            updateSyncStatus('error', 'Lỗi tải lên Cloud');
+            showToast('Không thể đồng bộ lên Google Sheets (đang lưu offline)', 'warning');
+        }
+    }
+
+    // 3. Thử lưu qua Data Bridge (Node.js)
     try {
         const response = await fetch('http://localhost:3000/save', {
             method: 'POST',
@@ -3163,32 +3257,51 @@ async function saveToLocalStorage() {
     } catch (e) {
         console.warn('⚠️ Không kết nối được Data Bridge');
     }
-
-    // 2. Fallback: Lưu vào LocalStorage
-    localStorage.setItem('ghn_map_delta', JSON.stringify(deltaData));
 }
 
 async function loadFromLocalStorage() {
     let customData = null;
 
-    // 1. Thử tải từ Data Bridge
-    try {
-        const response = await fetch('http://localhost:3000/load');
-        if (response.ok) {
-            customData = await response.json();
-            console.log('✅ Đã nạp dữ liệu tùy chỉnh từ ổ cứng');
+    // 1. Thử nạp từ Google Sheets Cloud Sync nếu có cấu hình
+    if (window.cloudSyncUrl) {
+        updateSyncStatus('syncing', 'Đang tải...');
+        try {
+            const response = await fetch(window.cloudSyncUrl);
+            if (response.ok) {
+                customData = await response.json();
+                console.log('✅ Đã nạp dữ liệu từ đám mây (Google Sheets)');
+                updateSyncStatus('synced', 'Đã đồng bộ');
+                showToast('Đã cập nhật dữ liệu mới nhất từ Google Sheets!', 'success');
+            } else {
+                throw new Error('Không thể fetch từ Cloud URL');
+            }
+        } catch (e) {
+            console.error('❌ Lỗi nạp từ đám mây:', e);
+            updateSyncStatus('error', 'Lỗi kết nối Cloud');
+            showToast('Lỗi kết nối đám mây, đang nạp dữ liệu offline...', 'warning');
         }
-    } catch (e) {
-        console.warn('⚠️ Không thể nạp từ Data Bridge');
     }
 
-    // 2. Thử nạp từ Build snapshot nếu chưa có dữ liệu từ bridge
+    // 2. Thử tải từ Data Bridge
+    if (!customData) {
+        try {
+            const response = await fetch('http://localhost:3000/load');
+            if (response.ok) {
+                customData = await response.json();
+                console.log('✅ Đã nạp dữ liệu tùy chỉnh từ ổ cứng (Data Bridge)');
+            }
+        } catch (e) {
+            console.warn('⚠️ Không thể nạp từ Data Bridge');
+        }
+    }
+
+    // 3. Thử nạp từ Build snapshot nếu chưa có dữ liệu từ bridge/cloud
     if (!customData && window.embeddedCustomData) {
         customData = window.embeddedCustomData;
         console.log('✅ Đã nạp dữ liệu từ Build Snapshot');
     }
 
-    // 3. Fallback: Nạp từ LocalStorage
+    // 4. Fallback: Nạp từ LocalStorage
     if (!customData) {
         const saved = localStorage.getItem('ghn_map_delta');
         if (saved) {
@@ -3197,7 +3310,7 @@ async function loadFromLocalStorage() {
         }
     }
 
-    // 4. Thực hiện hợp nhất nếu có dữ liệu gốc
+    // 5. Thực hiện hợp nhất nếu có dữ liệu gốc
     if (typeof basePostOffices !== 'undefined') {
         postOffices = mergeMarkerData(basePostOffices, customData);
     } else if (customData && customData.pos) {
@@ -3321,6 +3434,199 @@ function resetToInitialView() {
 
 // Init
 document.addEventListener('DOMContentLoaded', async () => {
+    // ====== CLOUD SYNC INITIALIZE ======
+    const cloudSyncUrlInput = document.getElementById('cloudSyncUrl');
+    const saveSyncUrlBtn = document.getElementById('saveSyncUrlBtn');
+    const forceSyncBtn = document.getElementById('forceSyncBtn');
+    const openSyncGuideBtn = document.getElementById('openSyncGuideBtn');
+    
+    const cloudSyncGuideModal = document.getElementById('cloudSyncGuideModal');
+    const closeSyncGuideModalBtn = document.getElementById('closeSyncGuideModalBtn');
+    const closeSyncGuideModalBtn2 = document.getElementById('closeSyncGuideModalBtn2');
+    const copyAppsScriptBtn = document.getElementById('copyAppsScriptBtn');
+    const appsScriptCodeTextarea = document.getElementById('appsScriptCodeTextarea');
+
+    if (cloudSyncUrlInput) {
+        cloudSyncUrlInput.value = window.cloudSyncUrl;
+        if (window.cloudSyncUrl) {
+            updateSyncStatus('synced', 'Đã lưu cấu hình');
+        }
+    }
+
+    if (saveSyncUrlBtn && cloudSyncUrlInput) {
+        saveSyncUrlBtn.addEventListener('click', async () => {
+            const url = cloudSyncUrlInput.value.trim();
+            if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+                showToast('Đường dẫn Web App không hợp lệ! Phải bắt đầu bằng https://', 'error');
+                return;
+            }
+            window.cloudSyncUrl = url;
+            localStorage.setItem('ghn_cloud_sync_url', url);
+            showToast('Đã lưu cấu hình Cloud Sync!', 'success');
+            
+            if (url) {
+                await loadFromLocalStorage();
+            } else {
+                updateSyncStatus('none', 'Chưa thiết lập');
+            }
+        });
+    }
+
+    if (forceSyncBtn) {
+        forceSyncBtn.addEventListener('click', async () => {
+            if (!window.cloudSyncUrl) {
+                showToast('Vui lòng cấu hình và lưu Link Web App trước!', 'warning');
+                return;
+            }
+            showToast('Đang đồng bộ dữ liệu đám mây...', 'info');
+            await loadFromLocalStorage();
+            await saveToLocalStorage();
+        });
+    }
+
+    const appsScriptCode = `// Google Apps Script - Cơ sở dữ liệu cho Bản đồ GHN tự làm
+function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // 1. Tải dữ liệu Bưu cục từ sheet "BuuCucTuyChinh"
+  var sheetPO = ss.getSheetByName("BuuCucTuyChinh");
+  var pos = [];
+  if (sheetPO) {
+    var dataPO = sheetPO.getDataRange().getValues();
+    for (var i = 1; i < dataPO.length; i++) {
+      var id = String(dataPO[i][0] || '').trim();
+      var name = String(dataPO[i][1] || '').trim();
+      var lat = parseFloat(dataPO[i][2]);
+      var lng = parseFloat(dataPO[i][3]);
+      var manager = String(dataPO[i][4] || '').trim();
+      var phone = String(dataPO[i][5] || '').trim();
+      var address = String(dataPO[i][6] || '').trim();
+      var labelLat = parseFloat(dataPO[i][7]);
+      var labelLng = parseFloat(dataPO[i][8]);
+      
+      if (id && name && !isNaN(lat) && !isNaN(lng)) {
+        var po = {
+          id: id,
+          name: name,
+          lat: lat,
+          lng: lng,
+          manager: manager,
+          phone: phone,
+          address: address,
+          isCustom: true
+        };
+        if (!isNaN(labelLat) && !isNaN(labelLng)) {
+          po.labelLatLng = { lat: labelLat, lng: labelLng };
+        }
+        pos.push(po);
+      }
+    }
+  }
+  
+  // 2. Tải các trạng thái khác từ sheet "TrangThaiKhac"
+  var sheetOther = ss.getSheetByName("TrangThaiKhac");
+  var modified = [];
+  var closedIds = [];
+  if (sheetOther) {
+    var dataOther = sheetOther.getDataRange().getValues();
+    for (var i = 1; i < dataOther.length; i++) {
+      var type = String(dataOther[i][0] || '').trim();
+      var jsonStr = String(dataOther[i][1] || '').trim();
+      if (jsonStr) {
+        try {
+          var parsed = JSON.parse(jsonStr);
+          if (type === "modified") modified = parsed;
+          if (type === "closedIds") closedIds = parsed;
+        } catch(err) {}
+      }
+    }
+  }
+  
+  var result = {
+    pos: pos,
+    modified: modified,
+    closedIds: closedIds
+  };
+  
+  return ContentService.createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var payload = JSON.parse(e.postData.contents);
+  
+  // 1. Lưu dữ liệu Bưu cục vào sheet "BuuCucTuyChinh"
+  var sheetPO = ss.getSheetByName("BuuCucTuyChinh");
+  if (!sheetPO) {
+    sheetPO = ss.insertSheet("BuuCucTuyChinh");
+  }
+  sheetPO.clear();
+  sheetPO.appendRow(["Mã BC", "Tên Bưu Cục", "Vĩ độ (Lat)", "Kinh độ (Lng)", "Quản lý", "Số điện thoại", "Địa chỉ", "Tọa độ nhãn Lat", "Tọa độ nhãn Lng"]);
+  
+  var pos = payload.pos || [];
+  for (var i = 0; i < pos.length; i++) {
+    var po = pos[i];
+    var labelLat = (po.labelLatLng && po.labelLatLng.lat) ? po.labelLatLng.lat : "";
+    var labelLng = (po.labelLatLng && po.labelLatLng.lng) ? po.labelLatLng.lng : "";
+    sheetPO.appendRow([
+      po.id,
+      po.name,
+      po.lat,
+      po.lng,
+      po.manager || "",
+      po.phone || "",
+      po.address || "",
+      labelLat,
+      labelLng
+    ]);
+  }
+  
+  // 2. Lưu trạng thái khác vào sheet "TrangThaiKhac"
+  var sheetOther = ss.getSheetByName("TrangThaiKhac");
+  if (!sheetOther) {
+    sheetOther = ss.insertSheet("TrangThaiKhac");
+  }
+  sheetOther.clear();
+  sheetOther.appendRow(["Loại", "Dữ liệu JSON", "Cập nhật lúc"]);
+  sheetOther.appendRow(["modified", JSON.stringify(payload.modified || []), new Date().toISOString()]);
+  sheetOther.appendRow(["closedIds", JSON.stringify(payload.closedIds || []), new Date().toISOString()]);
+  
+  return ContentService.createTextOutput(JSON.stringify({ success: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+    if (appsScriptCodeTextarea) {
+        appsScriptCodeTextarea.value = appsScriptCode;
+    }
+
+    if (openSyncGuideBtn && cloudSyncGuideModal) {
+        openSyncGuideBtn.addEventListener('click', () => {
+            cloudSyncGuideModal.style.display = 'flex';
+        });
+    }
+
+    const closeGuide = () => {
+        if (cloudSyncGuideModal) cloudSyncGuideModal.style.display = 'none';
+    };
+
+    if (closeSyncGuideModalBtn) closeSyncGuideModalBtn.addEventListener('click', closeGuide);
+    if (closeSyncGuideModalBtn2) closeSyncGuideModalBtn2.addEventListener('click', closeGuide);
+
+    if (copyAppsScriptBtn && appsScriptCodeTextarea) {
+        copyAppsScriptBtn.addEventListener('click', () => {
+            appsScriptCodeTextarea.select();
+            appsScriptCodeTextarea.setSelectionRange(0, 99999);
+            try {
+                navigator.clipboard.writeText(appsScriptCodeTextarea.value);
+                showToast('Đã copy mã Apps Script vào bộ nhớ tạm!', 'success');
+            } catch (err) {
+                document.execCommand('copy');
+                showToast('Đã copy mã Apps Script!', 'success');
+            }
+        });
+    }
+
     // 1. Tải dữ liệu tùy chỉnh trước
     await loadFromLocalStorage();
     
@@ -3523,6 +3829,59 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="display: flex; justify-content: flex-end; gap: 10px;">
             <button id="cancelBatchBtn" class="action-btn" style="background: rgba(255,255,255,0.1); width: auto; padding: 8px 16px;">Hủy</button>
             <button id="confirmBatchBtn" class="action-btn" style="background: #10b981; border-color: #059669; color: white; width: auto; padding: 8px 16px;"><i class="fa-solid fa-check"></i> Xác nhận Nhập</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cloud Sync Guide -->
+<div id="cloudSyncGuideModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: var(--bg-panel); width: 680px; max-width: 95%; max-height: 85vh; border-radius: 12px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: var(--text-main); display: flex; flex-direction: column; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; flex-shrink: 0;">
+            <h3 style="margin: 0; color: #fb923c;"><i class="fa-solid fa-book-open"></i> Hướng Dẫn Thiết Lập Cloud Database Google Sheets</h3>
+            <button id="closeSyncGuideModalBtn" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <div style="overflow-y: auto; padding-right: 8px; font-size: 0.9rem; line-height: 1.6; flex-grow: 1;">
+            <p style="margin: 0 0 12px 0;">Để chia sẻ dữ liệu bưu cục thời gian thực với đồng nghiệp, bạn hãy hoàn thành 3 bước đơn giản sau:</p>
+            
+            <h4 style="color: #fb923c; margin: 15px 0 8px 0;"><i class="fa-solid fa-1"></i> Bước 1: Tạo Google Sheet mới</h4>
+            <ul style="margin: 0 0 10px 0; padding-left: 20px;">
+                <li>Truy cập <a href="https://sheets.google.com" target="_blank" style="color: #3b82f6; text-decoration: underline;">Google Sheets</a> và tạo một bảng tính mới trống.</li>
+                <li>Bạn có thể đặt tên file tùy ý (ví dụ: <code>Dữ liệu Bản đồ GHN</code>). **Hãy để nguyên file trống**, hệ thống sẽ tự động tạo các cột sau khi đồng bộ lần đầu.</li>
+            </ul>
+            
+            <h4 style="color: #fb923c; margin: 15px 0 8px 0;"><i class="fa-solid fa-2"></i> Bước 2: Dán mã code Apps Script</h4>
+            <ul style="margin: 0 0 10px 0; padding-left: 20px;">
+                <li>Trong file Google Sheet vừa tạo, chọn menu **Tiện ích mở rộng** (Extensions) -> **Apps Script**.</li>
+                <li>Xóa toàn bộ mã code mặc định hiển thị trong trình soạn thảo.</li>
+                <li>Bấm nút **Copy Code** bên dưới, rồi dán toàn bộ đoạn mã vào trình soạn thảo Apps Script:</li>
+            </ul>
+            
+            <div style="position: relative; margin-bottom: 15px;">
+                <textarea id="appsScriptCodeTextarea" readonly style="width: 100%; height: 180px; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(15,23,42,0.5); color: #e2e8f0; font-family: monospace; font-size: 0.8rem; resize: none; box-sizing: border-box;"></textarea>
+                <button id="copyAppsScriptBtn" class="action-btn" style="position: absolute; right: 10px; top: 10px; width: auto; padding: 5px 12px; font-size: 0.75rem; background: #fb923c; border-color: #f97316; color: white;"><i class="fa-solid fa-copy"></i> Copy Code</button>
+            </div>
+            
+            <h4 style="color: #fb923c; margin: 15px 0 8px 0;"><i class="fa-solid fa-3"></i> Bước 3: Triển khai Web App</h4>
+            <ul style="margin: 0 0 10px 0; padding-left: 20px;">
+                <li>Bấm nút **Lưu** (hình đĩa mềm) hoặc nhấn <code>Ctrl + S</code>.</li>
+                <li>Bấm nút **Triển khai** (Deploy) ở góc trên bên phải -> chọn **Triển khai mới** (New deployment).</li>
+                <li>Bấm chọn biểu tượng bánh răng, chọn **Ứng dụng web** (Web app).</li>
+                <li>Cấu hình chính xác như sau (RẤT QUAN TRỌNG):
+                    <ol style="padding-left: 18px; margin-top: 5px;">
+                        <li>**Thực thi dưới dạng (Execute as):** Chọn **Tôi (Email của bạn)**.</li>
+                        <li>**Ai có quyền truy cập (Who has access):** Chọn **Bất kỳ ai (Anyone)**. (Điều này giúp đồng nghiệp của bạn có thể ghi nhận bưu cục mà không gặp lỗi phân quyền).</li>
+                    </ol>
+                </li>
+                <li>Bấm **Triển khai**. Google sẽ yêu cầu bạn cấp quyền truy cập bảng tính (Authorize Access) -> Chọn Email của bạn -> Chọn **Nâng cao (Advanced)** -> Chọn **Đi tới dự án (không an toàn)** -> Bấm **Cho phép (Allow)**.</li>
+                <li>Copy đường dẫn **URL ứng dụng web** hiển thị ở màn hình hoàn tất (có dạng <code>https://script.google.com/macros/s/.../exec</code>).</li>
+            </ul>
+            
+            <p style="margin: 15px 0 0 0; color: #10b981; font-weight: bold;"><i class="fa-solid fa-circle-check"></i> XONG! Dán link đó vào ô nhập link ở Tab "Đồng bộ" trên Bản đồ, bấm Lưu và trải nghiệm!</p>
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px; flex-shrink: 0;">
+            <button id="closeSyncGuideModalBtn2" class="action-btn" style="background: rgba(255,255,255,0.1); width: auto; padding: 8px 20px;">Đóng Hướng Dẫn</button>
         </div>
     </div>
 </div>
