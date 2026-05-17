@@ -2356,7 +2356,12 @@ function selectPostOffice(po) {
             }
             saveToLocalStorage();
             // Cập nhật lại bản đồ và sidebar
-            updatePostOfficesByProvince();
+            if (customData && customData.groups) {
+        window.mapAreaGroups = customData.groups;
+        if (typeof saveAreaGroups === 'function') saveAreaGroups();
+    }
+    
+    updatePostOfficesByProvince();
             selectPostOffice(po);
         });
     }
@@ -2493,7 +2498,12 @@ function editPostOffice(po) {
         }
 
         saveToLocalStorage();
-        updatePostOfficesByProvince();
+        if (customData && customData.groups) {
+        window.mapAreaGroups = customData.groups;
+        if (typeof saveAreaGroups === 'function') saveAreaGroups();
+    }
+    
+    updatePostOfficesByProvince();
         selectPostOffice(po);
         showToast('Đã cập nhật thông tin bưu cục!', 'success');
     });
@@ -3275,7 +3285,8 @@ async function _originalSaveToLocalStorage() {
     const deltaData = {
         pos: customPOs,
         modified: modifiedPOs,
-        closedIds: Array.from(window.closedPoIds)
+        closedIds: Array.from(window.closedPoIds),
+        groups: window.mapAreaGroups || []
     };
 
     // 1. Luôn lưu vào LocalStorage cục bộ để đề phòng offline
@@ -3383,6 +3394,11 @@ async function loadFromLocalStorage() {
         if (customData.closedIds) window.closedPoIds = new Set(customData.closedIds);
     }
 
+    if (customData && customData.groups) {
+        window.mapAreaGroups = customData.groups;
+        if (typeof saveAreaGroups === 'function') saveAreaGroups();
+    }
+    
     updatePostOfficesByProvince();
 }
 
@@ -3437,6 +3453,11 @@ function handleAddPo() {
 
     postOffices.push(po);
     saveToLocalStorage();
+    if (customData && customData.groups) {
+        window.mapAreaGroups = customData.groups;
+        if (typeof saveAreaGroups === 'function') saveAreaGroups();
+    }
+    
     updatePostOfficesByProvince();
     addPoPanel.classList.remove('visible');
     
@@ -3477,6 +3498,11 @@ function toggleClosedPosVisibility() {
     }
     if (btn) {
         btn.classList.toggle('active', !window.showClosedPos);
+    }
+    
+    if (customData && customData.groups) {
+        window.mapAreaGroups = customData.groups;
+        if (typeof saveAreaGroups === 'function') saveAreaGroups();
     }
     
     updatePostOfficesByProvince();
@@ -3591,6 +3617,7 @@ function doGet(e) {
   var sheetOther = ss.getSheetByName("TrangThaiKhac");
   var modified = [];
   var closedIds = [];
+  var groups = [];
   if (sheetOther) {
     var dataOther = sheetOther.getDataRange().getValues();
     for (var i = 1; i < dataOther.length; i++) {
@@ -3601,6 +3628,7 @@ function doGet(e) {
           var parsed = JSON.parse(jsonStr);
           if (type === "modified") modified = parsed;
           if (type === "closedIds") closedIds = parsed;
+          if (type === "groups") groups = parsed;
         } catch(err) {}
       }
     }
@@ -3609,7 +3637,8 @@ function doGet(e) {
   var result = {
     pos: pos,
     modified: modified,
-    closedIds: closedIds
+    closedIds: closedIds,
+    groups: groups || []
   };
   
   return ContentService.createTextOutput(JSON.stringify(result))
@@ -3655,6 +3684,7 @@ function doPost(e) {
   sheetOther.appendRow(["Loại", "Dữ liệu JSON", "Cập nhật lúc"]);
   sheetOther.appendRow(["modified", JSON.stringify(payload.modified || []), new Date().toISOString()]);
   sheetOther.appendRow(["closedIds", JSON.stringify(payload.closedIds || []), new Date().toISOString()]);
+  sheetOther.appendRow(["groups", JSON.stringify(payload.groups || []), new Date().toISOString()]);
   
   return ContentService.createTextOutput(JSON.stringify({ success: true }))
     .setMimeType(ContentService.MimeType.JSON);
@@ -3861,7 +3891,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (successCount > 0) {
                 saveToLocalStorage(); // Lưu vào local storage
-                updatePostOfficesByProvince(); // Cập nhật bản đồ
+                if (customData && customData.groups) {
+        window.mapAreaGroups = customData.groups;
+        if (typeof saveAreaGroups === 'function') saveAreaGroups();
+    }
+    
+    updatePostOfficesByProvince(); // Cập nhật bản đồ
                 showToast(`Đã thêm thành công ${successCount} bưu cục!`, 'success');
                 closeBatchModal();
             }
@@ -4031,7 +4066,12 @@ async function applyMapState(deltaData) {
     
     // Cập nhật lên bản đồ
     if (typeof updatePostOfficesByProvince === 'function') {
-        updatePostOfficesByProvince();
+        if (customData && customData.groups) {
+        window.mapAreaGroups = customData.groups;
+        if (typeof saveAreaGroups === 'function') saveAreaGroups();
+    }
+    
+    updatePostOfficesByProvince();
     }
     
     // --- Khôi phục vùng chọn ---
