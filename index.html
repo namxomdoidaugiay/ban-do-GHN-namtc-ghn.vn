@@ -281,34 +281,60 @@ body, html {
 .action-btn {
     width: 100%;
     padding: 12px 16px;
-    background-color: var(--panel-bg);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-weight: 600;
+    background-color: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    color: #f8fafc;
+    font-weight: 700;
+    font-size: 0.92rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.14);
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(245, 158, 11, 0.95));
+    border-color: rgba(251, 146, 60, 0.9);
+    color: #fff;
+}
+
+.action-btn.secondary {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.18);
+    color: #f8fafc;
+}
+
+.action-btn.success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(34, 197, 94, 0.95));
+    border-color: rgba(16, 185, 129, 0.9);
+    color: #fff;
+}
+
+.action-btn.warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(234, 88, 12, 0.95));
+    border-color: rgba(245, 158, 11, 0.9);
+    color: white;
 }
 
 .action-btn:hover {
-    background-color: var(--item-hover);
     transform: translateY(-2px);
+    background-color: rgba(255, 255, 255, 0.18);
 }
 
 .action-btn:active {
     transform: translateY(0);
-    background-color: rgba(251, 146, 60, 0.2);
+    background-color: rgba(251, 146, 60, 0.22);
 }
 
 .action-btn.active {
     border-color: #fb923c !important;
-    background-color: rgba(251, 146, 60, 0.1);
-    box-shadow: 0 0 10px rgba(251, 146, 60, 0.2);
+    background-color: rgba(251, 146, 60, 0.24);
+    box-shadow: 0 0 18px rgba(251, 146, 60, 0.28);
 }
 
 .action-btn i {
@@ -316,50 +342,65 @@ body, html {
 }
 
 .btn-add-po {
-    border-color: rgba(251, 146, 60, 0.5) !important;
-    background: rgba(251, 146, 60, 0.05) !important;
+    border-color: rgba(251, 146, 60, 0.9) !important;
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(245, 158, 11, 0.95)) !important;
+    color: white !important;
+    box-shadow: 0 14px 28px rgba(251, 146, 60, 0.3);
 }
 
 .btn-add-po:hover {
-    background: rgba(251, 146, 60, 0.1) !important;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(251, 146, 60, 0.95)) !important;
     border-color: #fb923c !important;
 }
 
+.btn-data.save {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    box-shadow: 0 12px 26px rgba(34, 197, 94, 0.25);
+    border: 1px solid rgba(16, 185, 129, 0.9);
+}
+
+.btn-data.save:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
 .data-actions {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 .btn-data {
     flex: 1;
-    padding: 12px;
+    padding: 12px 14px;
     border: none;
-    border-radius: 12px;
+    border-radius: 14px;
     color: white;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    transition: all 0.2s;
+    gap: 10px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    min-height: 46px;
 }
 
 .btn-data.export {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
 }
 
 .btn-data.import {
-    background: linear-gradient(135deg, #10b981, #059669);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    background: linear-gradient(135deg, #059669, #10b981);
+    box-shadow: 0 10px 24px rgba(16, 185, 129, 0.18);
 }
 
 .btn-data:hover {
     transform: translateY(-2px);
-    filter: brightness(1.1);
+    filter: brightness(1.05);
 }
 
 /* Post Office Quick List */
@@ -1383,8 +1424,11 @@ body, html {
                 <!-- Search -->
                 <div class="search-container">
                     <!-- Nút Batch Import -->
-                    <button id="batchImportBtn" class="action-btn" style="background: #10b981; border-color: #059669; color: white; margin-bottom: 10px;">
+                    <button id="batchImportBtn" class="action-btn success" style="margin-bottom: 10px;">
                         <i class="fa-solid fa-file-excel"></i> Nhập nhiều Bưu cục (từ Excel)
+                    </button>
+                    <button id="clearAllPosBtn" class="action-btn danger" style="margin-bottom: 10px;">
+                        <i class="fa-solid fa-trash-can"></i> Xóa tất cả PO hiện có
                     </button>
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -1485,7 +1529,9 @@ body, html {
                         <button id="addPoBtn" class="action-btn btn-add-po"><i class="fa-solid fa-plus"></i> Thêm BC</button>
                     </div>
                     <div class="data-actions">
+                        <button id="saveDataBtn" class="btn-data save"><i class="fa-solid fa-save"></i> Lưu lại ngay</button>
                         <button onclick="exportCustomPOs()" class="btn-data export"><i class="fa-solid fa-file-export"></i> Xuất JSON</button>
+                        <button onclick="exportCommuneData()" class="btn-data export"><i class="fa-solid fa-map-location-dot"></i> Xuất xã</button>
                         <button onclick="document.getElementById('importFile').click()" class="btn-data import"><i class="fa-solid fa-file-import"></i> Nhập JSON</button>
                         <input type="file" id="importFile" hidden onchange="importCustomPOs(event)">
                     </div>
@@ -1525,9 +1571,9 @@ body, html {
                             <label><i class="fa-solid fa-link"></i> LINK GOOGLE SHEETS WEB APP</label>
                             <input type="text" id="cloudSyncUrl" class="custom-select" style="background: rgba(15,23,42,0.5); color: white; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; box-sizing: border-box; width: 100%; font-size: 0.85rem;" placeholder="https://script.google.com/macros/s/.../exec">
                         </div>
-                        <div style="display: flex; gap: 8px; margin-top: 5px; margin-bottom: 15px;">
-                            <button id="saveSyncUrlBtn" class="action-btn" style="background: #10b981; border-color: #059669; color: white; width: auto; padding: 8px 16px; font-size: 0.85rem;"><i class="fa-solid fa-floppy-disk"></i> Lưu link</button>
-                            <button id="forceSyncBtn" class="action-btn" style="background: #3b82f6; border-color: #2563eb; color: white; width: auto; padding: 8px 16px; font-size: 0.85rem;"><i class="fa-solid fa-rotate"></i> Đồng bộ ngay</button>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px; margin-bottom: 15px;">
+                            <button id="saveSyncUrlBtn" class="action-btn success" style="width: auto; padding: 10px 18px;"><i class="fa-solid fa-floppy-disk"></i> Lưu link</button>
+                            <button id="forceSyncBtn" class="action-btn primary" style="width: auto; padding: 10px 18px;"><i class="fa-solid fa-rotate"></i> Đồng bộ ngay</button>
                         </div>
                         <div class="sync-status-card" style="padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); font-size: 0.85rem; line-height: 1.6; margin-bottom: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -1554,7 +1600,7 @@ body, html {
                                 <li>Tạo Google Sheets, dán code và Deploy dưới dạng **Web App**.</li>
                                 <li>Dán link Web App vào ô trên và bấm **Lưu link**.</li>
                             </ol>
-                            <button id="openSyncGuideBtn" class="action-btn" style="background: rgba(249,115,22,0.2); border-color: rgba(249,115,22,0.4); color: #fb923c; width: 100%; font-size: 0.85rem;"><i class="fa-solid fa-book-open"></i> Xem Hướng dẫn & Mã Code</button>
+                            <button id="openSyncGuideBtn" class="action-btn warning" style="width: 100%; font-size: 0.85rem;"><i class="fa-solid fa-book-open"></i> Xem Hướng dẫn & Mã Code</button>
                         </div>
                     </div>
                 </div>
@@ -1718,6 +1764,7 @@ let provincialLayers = {};
 let allFeatures = [];
 let provincialDataCache = {}; // Cache dữ liệu tỉnh đã tải để tránh nạp lại
 let selectedFeatures = new Set(); 
+let selectedPoIds = new Set();
 let currentOpacity = 0.15; 
 let postOfficeLayer = L.markerClusterGroup({
     showCoverageOnHover: false,
@@ -1817,7 +1864,10 @@ const resetViewBtn = document.getElementById('resetViewBtn');
 // Hàm cập nhật dữ liệu bản đồ theo tỉnh (Dùng allMapData)
 // Hàm hợp nhất dữ liệu (Dùng để kết hợp dữ liệu gốc và dữ liệu tùy chỉnh)
 function mergeMarkerData(baseData, customData) {
-    if (!customData) return [...baseData];
+    if (!customData) {
+        window.closedPoIds = new Set();
+        return [...baseData];
+    }
     
     // 1. Khởi tạo với dữ liệu gốc
     let merged = baseData.map(po => ({ ...po }));
@@ -1845,6 +1895,8 @@ function mergeMarkerData(baseData, customData) {
     // 4. Cập nhật danh sách ID đã đóng
     if (customData.closedIds && Array.isArray(customData.closedIds)) {
         window.closedPoIds = new Set(customData.closedIds);
+    } else {
+        window.closedPoIds = new Set();
     }
     
     return merged;
@@ -2010,6 +2062,8 @@ function updateDataSource() {
         labelLayer.clearLayers();
     }
 
+    reloadCurrentSourceData();
+    localStorage.setItem('ghn_data_source', getCurrentDataSource());
     const provinceSelect = document.getElementById('provinceSelect');
     if (provinceSelect) {
         updateMapData(provinceSelect.value);
@@ -2188,7 +2242,7 @@ function updatePostOfficesByProvince(province) {
 
             const marker = L.marker([po.lat, po.lng], { icon: icon })
                 .bindTooltip(nameWithStatus, { direction: 'top', className: 'po-tooltip' })
-                .on('click', () => selectPostOffice(po));
+                .on('click', () => selectSinglePo(po));
             
             marker.poData = po;
             postOfficeLayer.addLayer(marker);
@@ -2221,19 +2275,38 @@ function updatePostOfficesByProvince(province) {
             const isClosed = window.closedPoIds.has(po.id);
             const statusClass = isClosed ? 'closed' : '';
             const statusLabel = isClosed ? ' <span style="color: #ef4444;">(Đã đóng)</span>' : '';
+            const isSelected = selectedPoIds.has(po.id);
             return `
-                <div class="po-list-item ${statusClass}" data-id="${po.id}" title="${po.name}">
-                    <i class="fa-solid ${isClosed ? 'fa-store-slash' : 'fa-truck-fast'}"></i>
-                    <span>${po.name.replace('Bưu Cục ', '')}${statusLabel}</span>
+                <div class="po-list-item ${statusClass} ${isSelected ? 'active' : ''}" data-id="${po.id}" title="${po.name}">
+                    <label style="display:flex;align-items:center;gap:10px;width:100%;margin:0;cursor:pointer;">
+                        <input type="checkbox" class="po-select-checkbox" ${isSelected ? 'checked' : ''} />
+                        <span style="flex:1; min-width:0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${po.name.replace('Bưu Cục ', '')}${statusLabel}</span>
+                    </label>
                 </div>
             `;
         }).join('');
 
         listContainer.querySelectorAll('.po-list-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const po = filteredPOs.find(p => p.id === id);
-                if (po) selectPostOffice(po);
+            const checkbox = item.querySelector('.po-select-checkbox');
+            const id = item.getAttribute('data-id');
+            const po = filteredPOs.find(p => p.id === id);
+            if (!po) return;
+
+            if (checkbox) {
+                checkbox.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    togglePoSelection(po, this.checked);
+                });
+            }
+
+            item.addEventListener('click', function(e) {
+                if (e.target.closest('.po-select-checkbox')) return;
+                const multi = e.ctrlKey || e.metaKey;
+                if (multi) {
+                    togglePoSelection(po, !selectedPoIds.has(po.id));
+                } else {
+                    selectSinglePo(po);
+                }
             });
         });
     }
@@ -2243,47 +2316,423 @@ function updatePostOfficesByProvince(province) {
 
 
 // Hàm chọn bưu cục
-function selectPostOffice(po) {
-    const isClosed = window.closedPoIds.has(po.id);
-    const statusText = isClosed ? ' <span style="color: #ef4444; font-size: 0.8em;">(Đã đóng)</span>' : '';
-    const toggleStatusBtn = `<button id="togglePoStatusBtn" class="action-btn" style="background: ${isClosed ? '#22c55e' : '#ef4444'}; border-color: ${isClosed ? '#16a34a' : '#dc2626'}; color: white;">
-        <i class="fa-solid ${isClosed ? 'fa-store' : 'fa-store-slash'}"></i> ${isClosed ? 'Đánh dấu bưu cục đã mở' : 'Đánh dấu bưu cục đã đóng'}
-    </button>`;
+function clearPostOfficeSelection() {
+    if (window.poBoundaryLayer) window.poBoundaryLayer.clearLayers();
+    if (selectedFeatures && selectedFeatures.size > 0) {
+        selectedFeatures.forEach(layer => {
+            if (layer.parentProvinceLayer) layer.parentProvinceLayer.resetStyle(layer);
+        });
+        selectedFeatures.clear();
+    }
+    const activeItems = document.querySelectorAll('#poQuickList .po-list-item.active');
+    activeItems.forEach(el => el.classList.remove('active'));
+    if (typeof updateSidebar === 'function') updateSidebar(selectedFeatures);
+}
 
-    // Zoom tới bưu cục
-    map.flyTo([po.lat, po.lng], 15, { duration: 1.5 });
-    
-    // Highlight trong danh sách bưu cục (nếu có)
+function normalizeCommuneToken(value) {
+    return removeVietnameseTones(value || '').replace(/\s+/g, '').toLowerCase();
+}
+
+function drawPoBoundaryLayer(poGroups) {
+    if (!window.poBoundaryLayer) return;
+    window.poBoundaryLayer.clearLayers();
+
+    if (!poGroups || poGroups.length === 0) return;
+
+    const palette = ['#38bdf8', '#f97316', '#22c55e', '#e11d48', '#d946ef', '#facc15', '#0ea5e9', '#14b8a6'];
+
+    const segmentKey = (a, b) => {
+        const aKey = `${a[0]},${a[1]}`;
+        const bKey = `${b[0]},${b[1]}`;
+        return aKey < bKey ? `${aKey}|${bKey}` : `${bKey}|${aKey}`;
+    };
+
+    const extractSegments = feature => {
+        const segments = [];
+
+        const addRing = coords => {
+            if (!coords || coords.length < 2) return;
+            for (let i = 1; i < coords.length; i++) {
+                const a = coords[i - 1];
+                const b = coords[i];
+                const aKey = `${a[0]},${a[1]}`;
+                const bKey = `${b[0]},${b[1]}`;
+                const directionSign = aKey < bKey ? 1 : -1;
+                segments.push({
+                    key: segmentKey(a, b),
+                    coords: [a, b],
+                    directionSign: directionSign
+                });
+            }
+            const first = coords[0];
+            const last = coords[coords.length - 1];
+            if (first[0] !== last[0] || first[1] !== last[1]) {
+                const firstKey = `${first[0]},${first[1]}`;
+                const lastKey = `${last[0]},${last[1]}`;
+                const directionSign = firstKey < lastKey ? 1 : -1;
+                segments.push({
+                    key: segmentKey(last, first),
+                    coords: [last, first],
+                    directionSign: directionSign
+                });
+            }
+        };
+
+        const traverseGeometry = geometry => {
+            if (!geometry) return;
+            const type = geometry.type;
+            const coords = geometry.coordinates;
+            if (type === 'Polygon') {
+                coords.forEach(ring => addRing(ring));
+            } else if (type === 'MultiPolygon') {
+                coords.forEach(polygon => {
+                    polygon.forEach(ring => addRing(ring));
+                });
+            }
+        };
+
+        if (feature.type === 'FeatureCollection') {
+            feature.features.forEach(child => {
+                traverseGeometry(child.geometry);
+            });
+        } else if (feature.type === 'Feature') {
+            traverseGeometry(feature.geometry);
+        } else if (feature.type === 'Polygon' || feature.type === 'MultiPolygon') {
+            traverseGeometry(feature);
+        }
+
+        return segments;
+    };
+
+    const normalizeGroup = group => {
+        if (Array.isArray(group)) return { communeLayers: group, color: palette[0] };
+        return {
+            communeLayers: group.layers || group.communeLayers || group,
+            color: group.color || palette[0]
+        };
+    };
+
+    const normalizedGroups = Array.isArray(poGroups[0]) || (poGroups[0] && poGroups[0].feature)
+        ? poGroups.map(item => ({ communeLayers: item, color: palette[0] }))
+        : poGroups.map(normalizeGroup);
+
+    const mergeFeature = layers => {
+        const featuresToMerge = layers.map(layer => layer.feature);
+        if (featuresToMerge.length === 0) return null;
+        if (featuresToMerge.length === 1) return featuresToMerge[0];
+
+        try {
+            let merged = featuresToMerge[0];
+            for (let i = 1; i < featuresToMerge.length; i++) {
+                merged = turf.union(merged, featuresToMerge[i]);
+            }
+            return merged;
+        } catch (e) {
+            console.warn('Không hợp nhất được toàn bộ xã; sử dụng đường bao chung:', e);
+            try {
+                const combinedFeatureCollection = turf.featureCollection(featuresToMerge);
+                const hull = turf.convex(combinedFeatureCollection);
+                return hull || combinedFeatureCollection;
+            } catch (convexError) {
+                console.error('Lỗi khi tạo bao chung cho PO:', convexError);
+                return turf.featureCollection(featuresToMerge);
+            }
+        }
+    };
+
+    const segmentOwners = new Map();
+    const groupSegments = [];
+
+    normalizedGroups.forEach((group, index) => {
+        const finalGeojson = mergeFeature(group.communeLayers || []);
+        if (!finalGeojson) return;
+
+        const segments = extractSegments(finalGeojson);
+        groupSegments.push({ group, finalGeojson, segments, index });
+
+        segments.forEach(segment => {
+            const owners = segmentOwners.get(segment.key) || [];
+            if (!owners.includes(index)) {
+                owners.push(index);
+                segmentOwners.set(segment.key, owners);
+            }
+        });
+    });
+
+    groupSegments.forEach(({ group, finalGeojson, segments, index }) => {
+        if (!finalGeojson) return;
+
+        const fillLayer = L.geoJSON(finalGeojson, {
+            style: {
+                color: group.color,
+                weight: 0,
+                opacity: 0,
+                fillOpacity: 0.08,
+                fillColor: group.color
+            },
+            interactive: false
+        });
+        window.poBoundaryLayer.addLayer(fillLayer);
+
+        const lineFeatures = [];
+        segments.forEach(segment => {
+            const owners = segmentOwners.get(segment.key) || [];
+            const originalLine = turf.lineString(segment.coords);
+
+            if (owners.length === 1) {
+                if (owners[0] === index) {
+                    lineFeatures.push(originalLine);
+                }
+                return;
+            }
+
+            const ownerIndex = owners.indexOf(index);
+            if (ownerIndex === -1) return;
+
+            const offsetDistance = 0.01; // km
+            const centerIndex = (owners.length - 1) / 2;
+            const offsetSign = ownerIndex - centerIndex;
+            const offset = offsetSign * offsetDistance * (segment.directionSign || 1);
+            
+            try {
+                if (typeof turf.lineOffset === 'function') {
+                    const offsetLine = turf.lineOffset(originalLine, offset, { units: 'kilometers' });
+                    lineFeatures.push(offsetLine);
+                } else {
+                    lineFeatures.push(originalLine);
+                }
+            } catch (offsetError) {
+                console.warn('Không thể offset line, sử dụng line gốc:', offsetError);
+                lineFeatures.push(originalLine);
+            }
+        });
+
+        if (lineFeatures.length > 0) {
+            const lineLayer = L.geoJSON(turf.featureCollection(lineFeatures), {
+                style: {
+                    color: group.color,
+                    weight: 5,
+                    opacity: 1,
+                    dashArray: '10, 6',
+                    lineJoin: 'round',
+                    lineCap: 'round'
+                },
+                interactive: false
+            });
+            window.poBoundaryLayer.addLayer(lineLayer);
+        }
+    });
+}
+
+function editPoCoverage(po) {
+    const currentValue = (po.communeIds || []).join('; ');
+    const newValue = prompt('Nhập mã xã hoặc tên xã cover cho bưu cục này, ngăn cách bằng ; hoặc ,', currentValue);
+    if (newValue === null) return;
+
+    const communeIds = newValue
+        .split(/[;,]+/)
+        .map(item => item.trim())
+        .filter(Boolean);
+
+    po.communeIds = communeIds;
+    po.isModified = true;
+    saveToLocalStorage();
+    updatePostOfficesByProvince();
+    selectSinglePo(po);
+    showToast('Đã cập nhật danh sách xã cover cho bưu cục.', 'success');
+}
+
+function selectSinglePo(po) {
+    selectedPoIds = new Set([po.id]);
+    updatePostOfficesByProvince();
+    selectPostOffice(po);
+}
+
+function togglePoSelection(po, shouldSelect) {
+    if (shouldSelect) {
+        selectedPoIds.add(po.id);
+    } else {
+        selectedPoIds.delete(po.id);
+    }
+    updatePostOfficesByProvince();
+
+    if (selectedPoIds.size === 1) {
+        const remainingId = Array.from(selectedPoIds)[0];
+        const remainingPo = postOffices.find(p => p.id === remainingId);
+        if (remainingPo) {
+            selectPostOffice(remainingPo);
+        }
+    } else if (selectedPoIds.size > 1) {
+        selectMultiplePos(Array.from(selectedPoIds));
+    } else {
+        clearPostOfficeSelection();
+    }
+}
+
+function selectMultiplePos(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+        clearPostOfficeSelection();
+        return;
+    }
+
+    if (typeof window.selectedGroups !== 'undefined') {
+        window.selectedGroups.clear();
+        if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
+        if (typeof renderGroupsList === 'function') renderGroupsList();
+    }
+
+    clearPostOfficeSelection();
+
+    const palette = ['#38bdf8', '#f97316', '#22c55e', '#e11d48', '#d946ef', '#facc15', '#0ea5e9', '#14b8a6'];
+    const selections = [];
+    const selectedPOs = [];
+
+    ids.forEach((id, index) => {
+        const po = postOffices.find(p => p.id === id);
+        if (!po) return;
+
+        selectedPOs.push(po);
+        const communeMatchKeys = (Array.isArray(po.communeIds) ? po.communeIds : [])
+            .map(normalizeCommuneToken)
+            .filter(Boolean);
+
+        const matchedLayers = [];
+        if (communeMatchKeys.length > 0) {
+            Object.values(provincialLayers).forEach(provinceLayer => {
+                provinceLayer.eachLayer(layer => {
+                    const layerCode = (layer.feature.properties.ma_xa || '').toString().trim();
+                    const layerName = (layer.feature.properties.ten_xa || '').toString().trim();
+                    const normCode = layerCode.toLowerCase();
+                    const normName = normalizeCommuneToken(layerName);
+                    if (communeMatchKeys.includes(normCode) || communeMatchKeys.includes(normName)) {
+                        matchedLayers.push(layer);
+                    }
+                });
+            });
+        }
+
+        if (matchedLayers.length > 0) {
+            selections.push({
+                po: po,
+                communeLayers: matchedLayers,
+                color: palette[index % palette.length]
+            });
+        }
+    });
+
+    const allMatchedLayers = [];
+    selections.forEach(selection => {
+        selection.communeLayers.forEach(layer => {
+            if (!selectedFeatures.has(layer)) {
+                selectedFeatures.add(layer);
+                applySelectedStyle(layer);
+            }
+            allMatchedLayers.push(layer);
+        });
+    });
+
+    if (selections.length > 0) {
+        drawPoBoundaryLayer(selections);
+    }
+
     const listContainer = document.getElementById('poQuickList');
     if (listContainer) {
-        listContainer.querySelectorAll('.po-list-item').forEach(i => {
-            if (i.getAttribute('data-id') === po.id) {
-                i.classList.add('active');
-                i.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        listContainer.querySelectorAll('.po-list-item').forEach(item => {
+            const id = item.getAttribute('data-id');
+            item.classList.toggle('active', selectedPoIds.has(id));
+        });
+    }
+
+    if (typeof updateSidebar === 'function') {
+        updateSidebar(selectedFeatures);
+    }
+
+    const bounds = L.latLngBounds();
+    selectedPOs.forEach(po => {
+        if (po.lat && po.lng) bounds.extend([po.lat, po.lng]);
+    });
+    if (bounds.isValid()) {
+        map.flyToBounds(bounds, { padding: [50, 50], duration: 1.2 });
+    }
+}
+
+function selectPostOffice(po) {
+    const isClosed = window.closedPoIds.has(po.id);
+    const listContainer = document.getElementById('poQuickList');
+
+    if (typeof window.selectedGroups !== 'undefined') {
+        window.selectedGroups.clear();
+        if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
+        if (typeof renderGroupsList === 'function') renderGroupsList();
+    }
+    clearPostOfficeSelection();
+
+    if (listContainer) {
+        listContainer.querySelectorAll('.po-list-item').forEach(item => {
+            if (item.getAttribute('data-id') === po.id) {
+                item.classList.add('active');
+                item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
-                i.classList.remove('active');
+                item.classList.remove('active');
             }
         });
     }
-    
-    // Badge cho bưu cục tùy chỉnh
-    const customBadge = po.isCustom ? '<span class="po-custom-badge">Tự thêm</span>' : '';
-    
-    // Nút sửa thông tin bưu cục
-    const editBtn = '<button id="editPoBtn" class="action-btn edit-po-btn"><i class="fa-solid fa-pen-to-square"></i> Sửa thông tin bưu cục</button>';
 
-    // Nút xóa cho bưu cục tùy chỉnh
+    const communeTokens = (po.communeIds || []).map(token => token.trim()).filter(Boolean);
+    const communeMatchKeys = communeTokens.map(normalizeCommuneToken);
+
+    const matchedLayers = [];
+    if (communeMatchKeys.length > 0) {
+        Object.values(provincialLayers).forEach(provinceLayer => {
+            provinceLayer.eachLayer(layer => {
+                const layerCode = (layer.feature.properties.ma_xa || '').toString().trim();
+                const layerName = (layer.feature.properties.ten_xa || '').toString().trim();
+                const normCode = layerCode.toLowerCase();
+                const normName = normalizeCommuneToken(layerName);
+
+                if (communeMatchKeys.includes(normCode) || communeMatchKeys.includes(normName)) {
+                    matchedLayers.push(layer);
+                }
+            });
+        });
+    }
+
+    let matchedNames = [];
+    if (matchedLayers.length > 0) {
+        matchedLayers.forEach(layer => {
+            selectedFeatures.add(layer);
+            applySelectedStyle(layer);
+        });
+        drawPoBoundaryLayer([{ communeLayers: matchedLayers, color: '#38bdf8' }]);
+        if (typeof updateSidebar === 'function') updateSidebar(selectedFeatures);
+
+        matchedNames = [...new Set(matchedLayers.map(layer => layer.feature.properties.ten_xa || layer.feature.properties.ma_xa))];
+
+        const bounds = L.featureGroup(matchedLayers).getBounds();
+        if (bounds.isValid()) {
+            map.flyToBounds(bounds, { padding: [50, 50], duration: 1.2 });
+        } else if (po.lat && po.lng) {
+            map.flyTo([po.lat, po.lng], 15, { duration: 1.2 });
+        }
+    } else {
+        if (po.lat && po.lng) {
+            map.flyTo([po.lat, po.lng], 15, { duration: 1.2 });
+        }
+        if (typeof updateSidebar === 'function') updateSidebar(selectedFeatures);
+    }
+
+    const customBadge = po.isCustom ? '<span class="po-custom-badge">Tự thêm</span>' : '';
+    const editBtn = '<button id="editPoBtn" class="action-btn edit-po-btn"><i class="fa-solid fa-pen-to-square"></i> Sửa thông tin bưu cục</button>';
     const deleteBtn = po.isCustom
         ? '<button id="deletePoBtn" class="action-btn" data-po-id="' + po.id + '" style="background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #ef4444;"><i class="fa-solid fa-trash-can"></i> Xóa bưu cục này</button>'
         : '';
-    
-    // Cập nhật Sidebar
+
     const html = `
         <div id="infoHeader" class="info-header" style="cursor: pointer; align-items: flex-start;">
             <div style="flex: 1; padding-right: 10px;">
                 <h2 class="info-title" style="color: #fb923c; margin: 0; font-size: 1.1rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="${po.name}">${po.name}</h2>
                 <div style="font-size: 0.8rem; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
-                    ${customBadge} ${statusText}
+                    ${customBadge} ${isClosed ? ' <span style="color: #ef4444; font-size: 0.8em;">(Đã đóng)</span>' : ''}
                 </div>
             </div>
             <div style="display: flex; gap: 8px; flex-shrink: 0;">
@@ -2316,7 +2765,14 @@ function selectPostOffice(po) {
                 <span class="info-label"><i class="fa-solid fa-location-dot"></i> Tọa độ</span>
                 <span class="info-value" style="font-size: 0.8rem;">${po.lat}, ${po.lng}</span>
             </div>
-            
+            <div class="info-row">
+                <span class="info-label">Số xã đã gán</span>
+                <span class="info-value">${matchedLayers.length}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Xã / phường cover</span>
+                <span class="info-value" style="font-size: 0.8rem; line-height: 1.4;">${matchedNames.length > 0 ? matchedNames.slice(0, 10).join(', ') + (matchedNames.length > 10 ? '...' : '') : (communeTokens.length > 0 ? 'Không tìm thấy xã tương ứng' : 'Chưa gán xã')}</span>
+            </div>
             <div style="margin-top: 15px; font-size: 0.75rem; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Bán kính hiển thị</div>
             <div class="radius-controls" style="display: flex; gap: 6px;">
                 <button class="radius-btn" style="flex:1; padding: 6px 0; font-size: 0.8rem; border-radius: 6px;" onclick="drawRadius(${po.lat}, ${po.lng}, 2000)">2km</button>
@@ -2325,9 +2781,9 @@ function selectPostOffice(po) {
                 <button class="radius-btn" style="flex:1; padding: 6px 0; font-size: 0.8rem; border-radius: 6px;" onclick="drawRadius(${po.lat}, ${po.lng}, 10000)">10km</button>
                 <button class="radius-btn clear" style="flex:1.2; padding: 6px 0; font-size: 0.8rem; background: #ef4444; color: white; border: none; border-radius: 6px;" onclick="clearRadius()"><i class="fa-solid fa-xmark"></i> Xóa</button>
             </div>
-            
             <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
-                ${toggleStatusBtn}
+                ${isClosed ? '<button id="togglePoStatusBtn" class="action-btn" style="background: #22c55e; border-color: #16a34a; color: white;"><i class="fa-solid fa-store"></i> Đánh dấu bưu cục đã mở</button>' : '<button id="togglePoStatusBtn" class="action-btn" style="background: #ef4444; border-color: #dc2626; color: white;"><i class="fa-solid fa-store-slash"></i> Đánh dấu bưu cục đã đóng</button>'}
+                <button id="editPoCoverageBtn" class="action-btn" style="background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.4); color: #60a5fa;"><i class="fa-solid fa-map-pin"></i> Sửa xã cover</button>
                 ${editBtn}
                 ${deleteBtn}
             </div>
@@ -2337,13 +2793,11 @@ function selectPostOffice(po) {
         infoPanel.innerHTML = html;
         infoPanel.classList.remove('hidden');
     }
-    
-    // Bind sự kiện (Đóng/Thu nhỏ) cho Panel
+
     bindInfoPanelEvents(() => {
         // Callback khi đóng
     });
 
-    // Bind nút chuyển đổi trạng thái đóng/mở
     const togglePoStatusBtn = document.getElementById('togglePoStatusBtn');
     if (togglePoStatusBtn) {
         togglePoStatusBtn.addEventListener('click', () => {
@@ -2355,18 +2809,11 @@ function selectPostOffice(po) {
                 showToast('Đã đánh dấu bưu cục đã đóng!', 'warning');
             }
             saveToLocalStorage();
-            // Cập nhật lại bản đồ và sidebar
-            if (customData && customData.groups) {
-        window.mapAreaGroups = customData.groups;
-        if (typeof saveAreaGroups === 'function') saveAreaGroups();
-    }
-    
-    updatePostOfficesByProvince();
+            updatePostOfficesByProvince();
             selectPostOffice(po);
         });
     }
-    
-    // Bind nút xóa (nếu có)
+
     const deletePoBtn = document.getElementById('deletePoBtn');
     if (deletePoBtn) {
         deletePoBtn.addEventListener('click', function() {
@@ -2377,7 +2824,11 @@ function selectPostOffice(po) {
         });
     }
 
-    // Bind nút sửa thông tin
+    const editPoCoverageBtn = document.getElementById('editPoCoverageBtn');
+    if (editPoCoverageBtn) {
+        editPoCoverageBtn.addEventListener('click', () => editPoCoverage(po));
+    }
+
     const editPoBtn = document.getElementById('editPoBtn');
     if (editPoBtn) {
         editPoBtn.addEventListener('click', () => editPostOffice(po));
@@ -2498,12 +2949,7 @@ function editPostOffice(po) {
         }
 
         saveToLocalStorage();
-        if (customData && customData.groups) {
-        window.mapAreaGroups = customData.groups;
-        if (typeof saveAreaGroups === 'function') saveAreaGroups();
-    }
-    
-    updatePostOfficesByProvince();
+        updatePostOfficesByProvince();
         selectPostOffice(po);
         showToast('Đã cập nhật thông tin bưu cục!', 'success');
     });
@@ -2680,7 +3126,6 @@ function selectFeature(e) {
             if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
             if (typeof renderGroupsList === 'function') renderGroupsList();
         }
-        if (typeof pushUndoState === "function") pushUndoState();
 }
 
 function applySelectedStyle(layer) {
@@ -2780,7 +3225,6 @@ function updateSidebar(selectedSet) {
             if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
             if (typeof renderGroupsList === 'function') renderGroupsList();
         }
-        if (typeof pushUndoState === "function") pushUndoState();
     });
 
 }
@@ -3207,16 +3651,86 @@ function clearRadius() {
     }
 }
 
-// Export/Import PO
+// Export/Import PO và Groups
 function exportCustomPOs() {
+    const currentDS = getCurrentDataSource();
     const customPOs = postOffices.filter(po => po.isCustom);
-    if (customPOs.length === 0) return showToast('Không có bưu cục tự thêm để xuất.', 'warning');
-    const blob = new Blob([JSON.stringify(customPOs, null, 2)], { type: 'application/json' });
+    const groups = (window.mapAreaGroups || []).filter(g => !g.dataSource || g.dataSource === currentDS);
+    const modifiedPOs = postOffices.filter(po => po.isModified).map(po => ({
+        id: po.id, name: po.name, lat: po.lat, lng: po.lng,
+        manager: po.manager, phone: po.phone, address: po.address,
+        labelLatLng: po.labelLatLng,
+        communeIds: po.communeIds || [],
+        dataSource: po.dataSource || currentDS
+    }));
+    const closedIds = Array.from(window.closedPoIds || []);
+    const originalPOs = (typeof basePostOffices !== 'undefined') ? basePostOffices : postOffices;
+    const mergedPOs = postOffices;
+    
+    if (originalPOs.length === 0 && customPOs.length === 0 && groups.length === 0 && modifiedPOs.length === 0 && closedIds.length === 0) {
+        return showToast('Không có dữ liệu nào để xuất.', 'warning');
+    }
+    
+    // Gói dữ liệu đầy đủ: bưu cục gốc + bưu cục tự thêm + nhóm xã + chỉnh sửa + đóng cửa
+    const exportData = {
+        version: "2.0",
+        dataSource: getCurrentDataSource(),
+        originalPOs: originalPOs,
+        mergedPOs: mergedPOs,
+        customPOs: customPOs,
+        groups: groups,
+        modified: modifiedPOs,
+        closedIds: closedIds
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `GHN_Custom_POs_${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `GHN_Backup_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
-    showToast('Đã xuất dữ liệu bưu cục!', 'success');
+    showToast('Đã xuất dữ liệu thành công!', 'success');
+}
+
+function exportCommuneData() {
+    if (!allFeatures || allFeatures.length === 0) {
+        return showToast('Chưa có dữ liệu xã để xuất. Vui lòng tải bản đồ tỉnh trước.', 'warning');
+    }
+
+    const communes = allFeatures.map(feature => {
+        const props = feature.properties || {};
+        const ma_xa = props.ma_xa || '';
+        const ten_xa = props.ten_xa || '';
+        const ten_tinh = props.ten_tinh || '';
+        const loai = props.loai || '';
+        const normalized = removeVietnameseTones(ten_xa).replace(/\s+/g, '').toLowerCase();
+        return { ma_xa, ten_xa, ten_tinh, loai, normalized };
+    });
+
+    const uniqueByKey = {};
+    const uniqueCommunes = [];
+    communes.forEach(item => {
+        const key = `${item.ma_xa}|${item.ten_xa}|${item.ten_tinh}`;
+        if (!uniqueByKey[key]) {
+            uniqueByKey[key] = true;
+            uniqueCommunes.push(item);
+        }
+    });
+
+    const csvHeader = ['ma_xa', 'ten_xa', 'ten_tinh', 'loai', 'normalized'];
+    const csvRows = [csvHeader.join(',')];
+    uniqueCommunes.forEach(item => {
+        const row = csvHeader.map(field => `"${(item[field] || '').toString().replace(/"/g, '""')}"`).join(',');
+        csvRows.push(row);
+    });
+
+    const csvContent = csvRows.join('\n');
+    const bom = '\uFEFF';
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `GHN_Commune_List_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    showToast('Đã xuất danh sách xã thành công.', 'success');
 }
 
 function importCustomPOs(event) {
@@ -3226,14 +3740,54 @@ function importCustomPOs(event) {
     reader.onload = function(e) {
         try {
             const imported = JSON.parse(e.target.result);
-            if (!Array.isArray(imported)) throw new Error('Định dạng không hợp lệ');
-            imported.forEach(po => { if (!postOffices.find(p => p.id === po.id)) postOffices.push({ ...po, isCustom: true }); });
+            
+            let posToImport = [];
+            let groupsToImport = [];
+            
+            // Hỗ trợ tương thích ngược với format cũ (chỉ là mảng bưu cục)
+            if (Array.isArray(imported)) {
+                posToImport = imported;
+            } else if (imported && typeof imported === 'object') {
+                posToImport = imported.customPOs || [];
+                groupsToImport = imported.groups || [];
+            } else {
+                throw new Error('Định dạng không hợp lệ');
+            }
+            
+            // Nhập bưu cục
+            let importedPOCount = 0;
+            posToImport.forEach(po => { 
+                if (!postOffices.find(p => p.id === po.id)) {
+                    postOffices.push({ ...po, isCustom: true }); 
+                    importedPOCount++;
+                }
+            });
+            
+            // Nhập nhóm xã
+            let importedGroupCount = 0;
+            if (!window.mapAreaGroups) window.mapAreaGroups = [];
+            groupsToImport.forEach(newGroup => {
+                if (!window.mapAreaGroups.find(g => g.id === newGroup.id)) {
+                    window.mapAreaGroups.push(newGroup);
+                    importedGroupCount++;
+                }
+            });
+            
             saveToLocalStorage();
+            if (typeof saveAreaGroups === 'function') saveAreaGroups();
             updatePostOfficesByProvince(typeof provinceSelect !== 'undefined' ? provinceSelect.value : 'all');
-            showToast(`Đã nhập ${imported.length} bưu cục thành công!`, 'success');
+            
+            let toastMsg = `Đã nhập ${importedPOCount} bưu cục`;
+            if (importedGroupCount > 0) toastMsg += ` và ${importedGroupCount} nhóm xã`;
+            toastMsg += ` thành công!`;
+            
+            showToast(toastMsg, 'success');
         } catch (err) {
-            showToast('Lỗi khi đọc file JSON.', 'error');
+            console.error(err);
+            showToast('Lỗi khi đọc file JSON. Dữ liệu không hợp lệ.', 'error');
         }
+        // Đặt lại input để có thể chọn lại cùng một file
+        event.target.value = '';
     };
     reader.readAsText(file);
 }
@@ -3266,9 +3820,113 @@ function updateSyncStatus(status, text) {
     }
 }
 
+function getCurrentDataSource() {
+    const dsSelect = document.getElementById('dataSourceSelect');
+    return dsSelect ? dsSelect.value : 'legacy';
+}
+
+function getDeltaKeyForDataSource(dataSource) {
+    return dataSource === 'new' ? 'new' : 'legacy';
+}
+
+function getDeltaForCurrentSource(savedData) {
+    if (!savedData) return null;
+    if (savedData.legacy || savedData.new) {
+        const currentDS = getCurrentDataSource();
+        const currentKey = getDeltaKeyForDataSource(currentDS);
+        const currentDelta = savedData[currentKey] || { pos: [], modified: [], closedIds: [], groups: [] };
+
+        const hasCurrentData = currentDelta && (
+            (Array.isArray(currentDelta.pos) && currentDelta.pos.length > 0) ||
+            (Array.isArray(currentDelta.modified) && currentDelta.modified.length > 0) ||
+            (Array.isArray(currentDelta.closedIds) && currentDelta.closedIds.length > 0) ||
+            (Array.isArray(currentDelta.groups) && currentDelta.groups.length > 0)
+        );
+
+        if (hasCurrentData) {
+            return currentDelta;
+        }
+
+        const fallbackKey = currentKey === 'new' ? 'legacy' : 'new';
+        const fallbackDelta = savedData[fallbackKey];
+        if (fallbackDelta && (
+            (Array.isArray(fallbackDelta.pos) && fallbackDelta.pos.length > 0) ||
+            (Array.isArray(fallbackDelta.modified) && fallbackDelta.modified.length > 0) ||
+            (Array.isArray(fallbackDelta.closedIds) && fallbackDelta.closedIds.length > 0) ||
+            (Array.isArray(fallbackDelta.groups) && fallbackDelta.groups.length > 0)
+        )) {
+            return fallbackDelta;
+        }
+
+        return currentDelta;
+    }
+    return savedData;
+}
+
+function mergeSourceDeltaIntoSave(savedData, deltaData) {
+    const currentDS = getCurrentDataSource();
+    const key = getDeltaKeyForDataSource(currentDS);
+    const cloned = savedData && typeof savedData === 'object' ? { ...savedData } : {};
+
+    // Migrate older root-level delta format into per-source objects when needed.
+    if (!('legacy' in cloned) && !('new' in cloned) &&
+        (cloned.pos || cloned.modified || cloned.closedIds || cloned.groups)) {
+        const fallbackKey = getDeltaKeyForDataSource(cloned.source || 'legacy');
+        cloned[fallbackKey] = {
+            pos: cloned.pos || [],
+            modified: cloned.modified || [],
+            closedIds: cloned.closedIds || [],
+            groups: cloned.groups || []
+        };
+    }
+
+    cloned[key] = { ...deltaData, dataSource: currentDS };
+    cloned.legacy = cloned.legacy || { pos: [], modified: [], closedIds: [], groups: [] };
+    cloned.new = cloned.new || { pos: [], modified: [], closedIds: [], groups: [] };
+    cloned.pos = deltaData.pos;
+    cloned.modified = deltaData.modified;
+    cloned.closedIds = deltaData.closedIds;
+    cloned.groups = deltaData.groups;
+    cloned.source = currentDS;
+
+    return cloned;
+}
+
+function loadRawSavedDelta() {
+    const saved = localStorage.getItem('ghn_map_delta');
+    if (!saved) return null;
+    try {
+        return JSON.parse(saved);
+    } catch (e) {
+        console.warn('⚠️ Dữ liệu raw delta bị lỗi, bỏ qua:', e);
+        return null;
+    }
+}
+
+function loadSourceDeltaFromStorage() {
+    const saved = loadRawSavedDelta();
+    if (!saved) return null;
+    return getDeltaForCurrentSource(saved);
+}
+
+function reloadCurrentSourceData() {
+    const currentDelta = loadSourceDeltaFromStorage();
+    if (typeof basePostOffices !== 'undefined') {
+        postOffices = mergeMarkerData(basePostOffices, currentDelta);
+    } else if (currentDelta && currentDelta.pos) {
+        postOffices = currentDelta.pos;
+    } else {
+        postOffices = typeof basePostOffices !== 'undefined' ? mergeMarkerData(basePostOffices, null) : [];
+    }
+}
+
 // Quản lý PO tự thêm (LocalStorage / Cloud Sync / Data Bridge)
 async function _originalSaveToLocalStorage() {
-    const customPOs = postOffices.filter(po => po.isCustom);
+    const currentDS = getCurrentDataSource();
+    const customPOs = postOffices
+        .filter(po => po.isCustom && (!po.dataSource || po.dataSource === currentDS))
+        .map(po => ({ ...po, dataSource: currentDS }));
+
     const modifiedPOs = postOffices.filter(po => po.isModified).map(po => {
         return {
             id: po.id,
@@ -3278,7 +3936,9 @@ async function _originalSaveToLocalStorage() {
             manager: po.manager,
             phone: po.phone,
             address: po.address,
-            labelLatLng: po.labelLatLng
+            labelLatLng: po.labelLatLng,
+            communeIds: po.communeIds || [],
+            dataSource: currentDS
         };
     });
 
@@ -3286,11 +3946,13 @@ async function _originalSaveToLocalStorage() {
         pos: customPOs,
         modified: modifiedPOs,
         closedIds: Array.from(window.closedPoIds),
-        groups: window.mapAreaGroups || []
+        groups: (window.mapAreaGroups || []).filter(g => !g.dataSource || g.dataSource === currentDS)
     };
 
+    const savedData = mergeSourceDeltaIntoSave(loadRawSavedDelta() || {}, deltaData);
+
     // 1. Luôn lưu vào LocalStorage cục bộ để đề phòng offline
-    localStorage.setItem('ghn_map_delta', JSON.stringify(deltaData));
+    localStorage.setItem('ghn_map_delta', JSON.stringify(savedData));
 
     // 2. Thử đồng bộ lên đám mây (Google Sheets Web App) nếu có cấu hình
     if (window.cloudSyncUrl) {
@@ -3298,7 +3960,7 @@ async function _originalSaveToLocalStorage() {
         try {
             const response = await fetch(window.cloudSyncUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
+                mode: 'cors',
                 body: JSON.stringify(deltaData)
             });
             if (response.ok) {
@@ -3334,16 +3996,103 @@ async function _originalSaveToLocalStorage() {
     }
 }
 
+function clearAllPostOfficeData() {
+    // Reset trạng thái local và lưu lại file delta trống để tránh reload lại dữ liệu cũ từ cloud/bridge.
+    const emptyDelta = {
+        legacy: { pos: [], modified: [], closedIds: [], groups: [] },
+        new: { pos: [], modified: [], closedIds: [], groups: [] },
+        pos: [],
+        modified: [],
+        closedIds: [],
+        groups: [],
+        source: getCurrentDataSource()
+    };
+    localStorage.setItem('ghn_map_delta', JSON.stringify(emptyDelta));
+    localStorage.setItem('mapAreaGroups', JSON.stringify([]));
+    window.closedPoIds = new Set();
+    window.selectedPoIds = new Set();
+    if (window.selectedGroups && typeof window.selectedGroups.clear === 'function') {
+        window.selectedGroups.clear();
+    }
+    window.mapAreaGroups = [];
+
+    if (typeof basePostOffices !== 'undefined') {
+        postOffices = mergeMarkerData(basePostOffices, null);
+    } else {
+        postOffices = [];
+    }
+
+    if (typeof selectedFeatures !== 'undefined') {
+        selectedFeatures.forEach(layer => {
+            if (layer.parentProvinceLayer) layer.parentProvinceLayer.resetStyle(layer);
+        });
+        selectedFeatures.clear();
+    }
+
+    if (window.poBoundaryLayer && typeof window.poBoundaryLayer.clearLayers === 'function') {
+        window.poBoundaryLayer.clearLayers();
+    }
+    if (window.groupBoundaryLayer && typeof window.groupBoundaryLayer.clearLayers === 'function') {
+        window.groupBoundaryLayer.clearLayers();
+    }
+
+    if (typeof updatePostOfficesByProvince === 'function') updatePostOfficesByProvince();
+    if (typeof renderGroupsList === 'function') renderGroupsList();
+    if (typeof updateSidebar === 'function') updateSidebar(selectedFeatures);
+
+    if (typeof _originalSaveToLocalStorage === 'function') {
+        _originalSaveToLocalStorage();
+    }
+
+    showToast('Đã xóa toàn bộ dữ liệu bưu cục và nhóm xã hiện có trên bản đồ.', 'success');
+}
+
 async function loadFromLocalStorage() {
     let customData = null;
 
-    // 1. Thử nạp từ Google Sheets Cloud Sync nếu có cấu hình
-    if (window.cloudSyncUrl) {
+    const loadDeltaFromSaved = (savedText) => {
+        if (!savedText) return null;
+        try {
+            const parsed = JSON.parse(savedText);
+            return getDeltaForCurrentSource(parsed);
+        } catch (e) {
+            console.warn('⚠️ Dữ liệu localStorage bị lỗi, bỏ qua:', e);
+            return null;
+        }
+    };
+
+    // 1. Fallback: Nạp từ LocalStorage trước tiên để ưu tiên dữ liệu lưu trên máy
+    const saved = localStorage.getItem('ghn_map_delta');
+    if (saved) {
+        customData = loadDeltaFromSaved(saved);
+        if (customData) {
+            console.log('✅ Đã nạp dữ liệu từ LocalStorage');
+        }
+    }
+
+    // 2. Nếu không có localStorage, thử tải từ Data Bridge
+    if (!customData) {
+        try {
+            const response = await fetch('http://localhost:3000/load');
+            if (response.ok) {
+                customData = getDeltaForCurrentSource(await response.json());
+                console.log('✅ Đã nạp dữ liệu tùy chỉnh từ ổ cứng (Data Bridge)');
+            }
+        } catch (e) {
+            console.warn('⚠️ Không thể nạp từ Data Bridge');
+        }
+    }
+
+    // 3. Nếu vẫn chưa có, thử nạp từ Cloud Sync
+    if (!customData && window.cloudSyncUrl) {
         updateSyncStatus('syncing', 'Đang tải...');
         try {
-            const response = await fetch(window.cloudSyncUrl);
+            const response = await fetch(window.cloudSyncUrl, {
+                mode: 'cors',
+                headers: { 'Accept': 'application/json' }
+            });
             if (response.ok) {
-                customData = await response.json();
+                customData = getDeltaForCurrentSource(await response.json());
                 console.log('✅ Đã nạp dữ liệu từ đám mây (Google Sheets)');
                 updateSyncStatus('synced', 'Đã đồng bộ');
                 showToast('Đã cập nhật dữ liệu mới nhất từ Google Sheets!', 'success');
@@ -3357,32 +4106,10 @@ async function loadFromLocalStorage() {
         }
     }
 
-    // 2. Thử tải từ Data Bridge
-    if (!customData) {
-        try {
-            const response = await fetch('http://localhost:3000/load');
-            if (response.ok) {
-                customData = await response.json();
-                console.log('✅ Đã nạp dữ liệu tùy chỉnh từ ổ cứng (Data Bridge)');
-            }
-        } catch (e) {
-            console.warn('⚠️ Không thể nạp từ Data Bridge');
-        }
-    }
-
-    // 3. Thử nạp từ Build snapshot nếu chưa có dữ liệu từ bridge/cloud
+    // 4. Thử nạp từ Build snapshot nếu chưa có dữ liệu nào khác
     if (!customData && window.embeddedCustomData) {
-        customData = window.embeddedCustomData;
+        customData = getDeltaForCurrentSource(window.embeddedCustomData);
         console.log('✅ Đã nạp dữ liệu từ Build Snapshot');
-    }
-
-    // 4. Fallback: Nạp từ LocalStorage
-    if (!customData) {
-        const saved = localStorage.getItem('ghn_map_delta');
-        if (saved) {
-            customData = JSON.parse(saved);
-            console.log('✅ Đã nạp dữ liệu từ LocalStorage');
-        }
     }
 
     // 5. Thực hiện hợp nhất nếu có dữ liệu gốc
@@ -3391,21 +4118,32 @@ async function loadFromLocalStorage() {
     } else if (customData && customData.pos) {
         // Nếu không có base, nạp tạm những gì có
         postOffices = customData.pos;
-        if (customData.closedIds) window.closedPoIds = new Set(customData.closedIds);
+        if (customData.closedIds && Array.isArray(customData.closedIds)) {
+            window.closedPoIds = new Set(customData.closedIds);
+        } else {
+            window.closedPoIds = new Set();
+        }
+    } else {
+        window.closedPoIds = new Set();
     }
 
-    if (customData && customData.groups) {
+    // Nap nhom xa tu cloud/bridge neu co, KHONG ghi de neu cloud tra ve rong
+    if (customData && customData.groups && customData.groups.length > 0) {
         window.mapAreaGroups = customData.groups;
         if (typeof saveAreaGroups === 'function') saveAreaGroups();
+    } else if (!window.mapAreaGroups || window.mapAreaGroups.length === 0) {
+        // Chi dung localStorage rieng neu bien toan cuc chua co gi
+        const localGroups = localStorage.getItem('mapAreaGroups');
+        if (localGroups) {
+            window.mapAreaGroups = JSON.parse(localGroups);
+            if (typeof renderGroupsList === 'function') renderGroupsList();
+        }
     }
-    
+
     updatePostOfficesByProvince();
 }
 
 
-async function saveToLocalStorageFallback(dataToSave) {
-    localStorage.setItem('ghn_full_data', JSON.stringify(dataToSave));
-}
 
 function deleteCustomPO(id) {
     const index = postOffices.findIndex(po => po.id === id);
@@ -3444,7 +4182,8 @@ function handleAddPo() {
         lng: parseFloat(document.getElementById('poLng').value),
         manager: document.getElementById('poManager').value,
         phone: document.getElementById('poPhone').value,
-        isCustom: true
+        isCustom: true,
+        dataSource: getCurrentDataSource()
     };
     if (!po.id || !po.name || isNaN(po.lat) || isNaN(po.lng)) return showToast('Vui lòng nhập đầy đủ thông tin!', 'warning');
     
@@ -3453,11 +4192,6 @@ function handleAddPo() {
 
     postOffices.push(po);
     saveToLocalStorage();
-    if (customData && customData.groups) {
-        window.mapAreaGroups = customData.groups;
-        if (typeof saveAreaGroups === 'function') saveAreaGroups();
-    }
-    
     updatePostOfficesByProvince();
     addPoPanel.classList.remove('visible');
     
@@ -3500,11 +4234,6 @@ function toggleClosedPosVisibility() {
         btn.classList.toggle('active', !window.showClosedPos);
     }
     
-    if (customData && customData.groups) {
-        window.mapAreaGroups = customData.groups;
-        if (typeof saveAreaGroups === 'function') saveAreaGroups();
-    }
-    
     updatePostOfficesByProvince();
     showToast(window.showClosedPos ? 'Đang hiện bưu cục đã đóng' : ' Đã ẩn bưu cục đã đóng', 'info');
 }
@@ -3543,6 +4272,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    const savedDataSource = localStorage.getItem('ghn_data_source');
+    const dsSelect = document.getElementById('dataSourceSelect');
+    if (dsSelect && savedDataSource && ['legacy', 'new'].includes(savedDataSource)) {
+        dsSelect.value = savedDataSource;
+    }
+
+    if (window.location.protocol === 'file:' || window.location.origin === 'null') {
+        showToast('Trang đang mở từ file://; hãy chạy bằng HTTP server để đồng bộ Google Sheets và nạp JSON cục bộ đúng.', 'warning');
+    }
+
     if (saveSyncUrlBtn && cloudSyncUrlInput) {
         saveSyncUrlBtn.addEventListener('click', async () => {
             const url = cloudSyncUrlInput.value.trim();
@@ -3575,6 +4314,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const appsScriptCode = `// Google Apps Script - Cơ sở dữ liệu cho Bản đồ GHN tự làm
+// Lưu ý: Deploy Web App với quyền truy cập "Anyone, even anonymous".
+// Sau đó dán URL exec vào ô LINK GOOGLE SHEETS WEB APP.
 function doGet(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
@@ -3593,6 +4334,11 @@ function doGet(e) {
       var address = String(dataPO[i][6] || '').trim();
       var labelLat = parseFloat(dataPO[i][7]);
       var labelLng = parseFloat(dataPO[i][8]);
+      var communeIdsRaw = String(dataPO[i][9] || '').trim();
+      var communeIds = [];
+      if (communeIdsRaw) {
+        communeIds = communeIdsRaw.split(/[;,]+/).map(function(item) { return item.trim(); }).filter(Boolean);
+      }
       
       if (id && name && !isNaN(lat) && !isNaN(lng)) {
         var po = {
@@ -3603,6 +4349,7 @@ function doGet(e) {
           manager: manager,
           phone: phone,
           address: address,
+          communeIds: communeIds,
           isCustom: true
         };
         if (!isNaN(labelLat) && !isNaN(labelLng)) {
@@ -3655,13 +4402,17 @@ function doPost(e) {
     sheetPO = ss.insertSheet("BuuCucTuyChinh");
   }
   sheetPO.clear();
-  sheetPO.appendRow(["Mã BC", "Tên Bưu Cục", "Vĩ độ (Lat)", "Kinh độ (Lng)", "Quản lý", "Số điện thoại", "Địa chỉ", "Tọa độ nhãn Lat", "Tọa độ nhãn Lng"]);
+  sheetPO.appendRow(["Mã BC", "Tên Bưu Cục", "Vĩ độ (Lat)", "Kinh độ (Lng)", "Quản lý", "Số điện thoại", "Địa chỉ", "Tọa độ nhãn Lat", "Tọa độ nhãn Lng", "Xã cover"]);
   
   var pos = payload.pos || [];
   for (var i = 0; i < pos.length; i++) {
     var po = pos[i];
     var labelLat = (po.labelLatLng && po.labelLatLng.lat) ? po.labelLatLng.lat : "";
     var labelLng = (po.labelLatLng && po.labelLatLng.lng) ? po.labelLatLng.lng : "";
+    var communeIdsText = "";
+    if (po.communeIds && Array.isArray(po.communeIds)) {
+      communeIdsText = po.communeIds.join('; ');
+    }
     sheetPO.appendRow([
       po.id,
       po.name,
@@ -3671,7 +4422,8 @@ function doPost(e) {
       po.phone || "",
       po.address || "",
       labelLat,
-      labelLng
+      labelLng,
+      communeIdsText
     ]);
   }
   
@@ -3823,6 +4575,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const clearAllPosBtn = document.getElementById('clearAllPosBtn');
+    if (clearAllPosBtn) {
+        clearAllPosBtn.addEventListener('click', () => {
+            const confirmed = confirm('Bạn có chắc muốn xóa toàn bộ thông tin bưu cục hiện có trên bản đồ không?');
+            if (!confirmed) return;
+            clearAllPostOfficeData();
+        });
+    }
+
+    const saveDataBtn = document.getElementById('saveDataBtn');
+    if (saveDataBtn) {
+        saveDataBtn.addEventListener('click', async () => {
+            if (typeof saveToLocalStorage === 'function') {
+                await saveToLocalStorage();
+                showToast('Đã lưu dữ liệu vào máy của bạn.', 'success');
+            } else {
+                showToast('Không tìm thấy chức năng lưu dữ liệu.', 'error');
+            }
+        });
+    }
+
     function closeBatchModal() {
         if (batchImportModal) batchImportModal.style.display = 'none';
     }
@@ -3861,6 +4634,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lngStr = cols[3] ? cols[3].trim().replace(',', '.') : '';
                 const manager = cols[4] ? cols[4].trim() : '';
                 const phone = cols[5] ? cols[5].trim() : '';
+                const communeIdsRaw = cols[6] ? cols[6].trim() : '';
+                const communeIds = communeIdsRaw
+                    ? communeIdsRaw.split(/[;,|\t]+/).map(item => item.trim()).filter(Boolean)
+                    : [];
 
                 const lat = parseFloat(latStr);
                 const lng = parseFloat(lngStr);
@@ -3877,6 +4654,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     lng: lng,
                     manager: manager,
                     phone: phone,
+                    communeIds: communeIds,
                     isCustom: true
                 };
 
@@ -3891,12 +4669,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (successCount > 0) {
                 saveToLocalStorage(); // Lưu vào local storage
-                if (customData && customData.groups) {
-        window.mapAreaGroups = customData.groups;
-        if (typeof saveAreaGroups === 'function') saveAreaGroups();
-    }
-    
-    updatePostOfficesByProvince(); // Cập nhật bản đồ
+                updatePostOfficesByProvince(); // Cập nhật bản đồ
                 showToast(`Đã thêm thành công ${successCount} bưu cục!`, 'success');
                 closeBatchModal();
             }
@@ -3919,8 +4692,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         <div style="margin-bottom: 15px; font-size: 0.9rem; line-height: 1.5;">
             <p style="margin: 0 0 5px 0;"><strong>Hướng dẫn:</strong> Copy dữ liệu từ Excel và dán (Ctrl+V) vào ô bên dưới.</p>
-            <p style="margin: 0; color: #fb923c; font-size: 0.85rem;"><i class="fa-solid fa-circle-info"></i> Thứ tự cột: <strong>Mã BC | Tên | Vĩ độ | Kinh độ | Quản lý | SĐT</strong></p>
-            <p style="margin: 0; color: #94a3b8; font-size: 0.8rem; font-style: italic;">* Mã bưu cục có thể để trống (hệ thống sẽ tự tạo). Vĩ độ, Kinh độ là bắt buộc.</p>
+            <p style="margin: 0; color: #fb923c; font-size: 0.85rem;"><i class="fa-solid fa-circle-info"></i> Thứ tự cột: <strong>Mã BC | Tên | Vĩ độ | Kinh độ | Quản lý | SĐT | Mã/Xã cover</strong></p>
+            <p style="margin: 0; color: #94a3b8; font-size: 0.8rem; font-style: italic;">* Mã bưu cục có thể để trống (hệ thống sẽ tự tạo). Vĩ độ, Kinh độ là bắt buộc. Cột cuối có thể chứa một hoặc nhiều mã xã / tên xã, ngăn cách bằng dấu chấm phẩy, dấu phẩy hoặc tab.</p>
         </div>
 
         <textarea id="batchImportTextarea" placeholder="Dán dữ liệu Excel vào đây (hỗ trợ copy dán nhiều hàng)..." style="width: 100%; height: 200px; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(15,23,42,0.5); color: white; font-family: monospace; resize: vertical; margin-bottom: 15px; box-sizing: border-box;"></textarea>
@@ -3955,7 +4728,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <li>Xóa toàn bộ mã code mặc định hiển thị trong trình soạn thảo.</li>
                 <li>Bấm nút **Copy Code** bên dưới, rồi dán toàn bộ đoạn mã vào trình soạn thảo Apps Script:</li>
             </ul>
-            
+            <p style="margin: 0 0 15px 0; color: #fbbf24; font-size: 0.9rem;"><strong>Lưu ý:</strong> Phiên bản Apps Script hiện tại đã hỗ trợ thêm cột <code>Xã cover</code> trong sheet <code>BuuCucTuyChinh</code>. Bạn có thể nhập nhiều mã/xã cách nhau bằng dấu chấm phẩy.</p>
             <div style="position: relative; margin-bottom: 15px;">
                 <textarea id="appsScriptCodeTextarea" readonly style="width: 100%; height: 180px; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(15,23,42,0.5); color: #e2e8f0; font-family: monospace; font-size: 0.8rem; resize: none; box-sizing: border-box;"></textarea>
                 <button id="copyAppsScriptBtn" class="action-btn" style="position: absolute; right: 10px; top: 10px; width: auto; padding: 5px 12px; font-size: 0.75rem; background: #fb923c; border-color: #f97316; color: white;"><i class="fa-solid fa-copy"></i> Copy Code</button>
@@ -4066,12 +4839,7 @@ async function applyMapState(deltaData) {
     
     // Cập nhật lên bản đồ
     if (typeof updatePostOfficesByProvince === 'function') {
-        if (customData && customData.groups) {
-        window.mapAreaGroups = customData.groups;
-        if (typeof saveAreaGroups === 'function') saveAreaGroups();
-    }
-    
-    updatePostOfficesByProvince();
+        updatePostOfficesByProvince();
     }
     
     // --- Khôi phục vùng chọn ---
@@ -4101,14 +4869,13 @@ async function applyMapState(deltaData) {
         // Cập nhật giao diện Sidebar
         if (typeof updateSidebar === 'function') {
             updateSidebar(selectedFeatures);
-    
+        }
+
         if (typeof window.selectedGroups !== 'undefined' && window.selectedGroups.size > 0) {
             window.selectedGroups.clear();
             if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
             if (typeof renderGroupsList === 'function') renderGroupsList();
         }
-        if (typeof pushUndoState === "function") pushUndoState();
-}
     }
     
     // Lưu ngược lại storage nhưng KHÔNG push undo state (vì isUndoRedoRunning = true)
@@ -4145,6 +4912,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('DOMContentLoaded', () => {
         if (typeof map !== 'undefined') {
             window.groupBoundaryLayer = L.layerGroup().addTo(map);
+            window.poBoundaryLayer = L.layerGroup().addTo(map);
         }
         setTimeout(() => { renderGroupsList(); }, 1000); 
     });
@@ -4152,6 +4920,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveAreaGroups() {
         localStorage.setItem('mapAreaGroups', JSON.stringify(window.mapAreaGroups));
         renderGroupsList();
+        if (typeof saveToLocalStorage === 'function') saveToLocalStorage();
     }
 
     function promptCreateGroup() {
