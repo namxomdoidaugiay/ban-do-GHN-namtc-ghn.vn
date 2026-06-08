@@ -1,6 +1,68 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- Global Error Handler to debug runtime errors directly on UI -->
+    <script>
+        (function() {
+            function showGlobalError(message, source, lineno, colno, error) {
+                var errorDiv = document.getElementById('global-error-log');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.id = 'global-error-log';
+                    errorDiv.style.position = 'fixed';
+                    errorDiv.style.top = '0';
+                    errorDiv.style.left = '0';
+                    errorDiv.style.width = '100%';
+                    errorDiv.style.backgroundColor = '#ef4444';
+                    errorDiv.style.color = 'white';
+                    errorDiv.style.padding = '15px';
+                    errorDiv.style.zIndex = '999999';
+                    errorDiv.style.fontSize = '14px';
+                    errorDiv.style.fontFamily = 'monospace';
+                    errorDiv.style.whiteSpace = 'pre-wrap';
+                    errorDiv.style.maxHeight = '50vh';
+                    errorDiv.style.overflowY = 'auto';
+                    errorDiv.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
+                    
+                    var closeBtn = document.createElement('button');
+                    closeBtn.innerText = 'Đóng [X]';
+                    closeBtn.style.float = 'right';
+                    closeBtn.style.backgroundColor = 'white';
+                    closeBtn.style.color = '#ef4444';
+                    closeBtn.style.border = 'none';
+                    closeBtn.style.padding = '5px 10px';
+                    closeBtn.style.cursor = 'pointer';
+                    closeBtn.style.fontWeight = 'bold';
+                    closeBtn.onclick = function() { errorDiv.remove(); };
+                    errorDiv.appendChild(closeBtn);
+                    
+                    var title = document.createElement('strong');
+                    title.innerText = 'LỖI RUNTIME JAVASCRIPT:\n';
+                    errorDiv.appendChild(title);
+                    
+                    document.body ? document.body.appendChild(errorDiv) : document.documentElement.appendChild(errorDiv);
+                }
+                var errorMsg = document.createElement('div');
+                errorMsg.style.marginTop = '8px';
+                errorMsg.style.borderTop = '1px solid rgba(255,255,255,0.3)';
+                errorMsg.style.paddingTop = '8px';
+                errorMsg.innerText = message + '\nTại: ' + source + ':' + lineno + ':' + colno + '\nStack: ' + (error ? error.stack : 'N/A');
+                errorDiv.appendChild(errorMsg);
+            }
+            
+            window.addEventListener('error', function(e) {
+                showGlobalError(e.message, e.filename, e.lineno, e.colno, e.error);
+            });
+            
+            window.addEventListener('unhandledrejection', function(e) {
+                var reason = e.reason;
+                var msg = reason instanceof Error ? reason.message : String(reason);
+                var stack = reason instanceof Error ? reason.stack : '';
+                showGlobalError('Unhandled Promise Rejection: ' + msg, 'Promise', 0, 0, {stack: stack});
+            });
+        })();
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bản Đồ GHN 2025</title>
@@ -68,6 +130,37 @@ body, html {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-top-left.sidebar-collapsed {
+    transform: translateX(-400px);
+}
+
+#sidebarToggleHandle {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+
+#sidebarToggleHandle:hover {
+    background: var(--item-hover);
+    color: var(--accent-color);
 }
 
 .floating-top-center {
@@ -81,21 +174,74 @@ body, html {
 }
 
 .floating-top-center button {
-    width: 48px;
-    height: 48px;
+    width: 38px;
+    height: 38px;
     background: var(--panel-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 8px;
     color: var(--text-primary);
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Search box placed in the top-center floating bar – style it like the other buttons */
+.floating-top-center .search-box {
+    flex: 0 0 auto;
+    width: 240px; /* extended width for better visibility */
+    height: 38px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px 0 32px; /* left padding for absolute icon */
+    box-sizing: border-box;
+    position: relative;
+    margin-right: 8px;
+    color: var(--text-primary);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.floating-top-center .search-box .search-icon {
+    left: 10px;
+}
+.floating-top-center .search-box #searchInput {
+    padding: 8px 30px;
+    font-size: 0.88rem;
+}
+
+/* Icon inside the toolbar search box – keep absolute positioning, only set color */
+.floating-top-center .search-box .search-icon {
+    color: var(--text-secondary);
+}
+
+.floating-top-center .search-box input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.floating-top-center .search-box .clear-btn {
+    position: absolute;
+    right: 6px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    display: none;
 }
 
 .floating-top-center button:hover {
@@ -148,10 +294,11 @@ body, html {
 .left-menu-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: top center;
-    max-height: 2000px;
+    max-height: calc(100vh - 100px);
+    overflow: visible;
     opacity: 1;
     visibility: visible;
 }
@@ -223,6 +370,8 @@ body, html {
 
 .tab-content.active {
     display: flex;
+    flex: 1;
+    min-height: 0;
 }
 
 .tool-grid {
@@ -404,41 +553,61 @@ body, html {
 }
 
 /* Post Office Quick List */
-.po-list-container {
-    background-color: var(--panel-bg);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 .po-quick-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    max-height: calc(100vh - 580px);
-    min-height: 150px;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.55); /* Unified premium container frame */
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px;
     overflow-y: auto;
-    padding-right: 4px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Tùy chỉnh thanh cuộn cho danh sách bưu cục */
+#poQuickList {
+    height: calc(100vh - 350px);
+    max-height: calc(100vh - 350px);
+}
+
+#groupsQuickList {
+    height: calc(100vh - 410px);
+    max-height: calc(100vh - 410px);
+}
+
+#leftSidebarInfoContent::-webkit-scrollbar {
+    width: 6px;
+}
+#leftSidebarInfoContent::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+}
+#leftSidebarInfoContent::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(251, 146, 60, 0.3), rgba(251, 146, 60, 0.15));
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+#leftSidebarInfoContent::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #fb923c, #f59e0b);
+}
+
+/* Premium scrollbar styling */
 .po-quick-list::-webkit-scrollbar {
-    width: 5px;
+    width: 6px;
 }
 .po-quick-list::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 10px;
 }
 .po-quick-list::-webkit-scrollbar-thumb {
-    background: var(--border-color);
+    background: linear-gradient(180deg, rgba(251, 146, 60, 0.3), rgba(251, 146, 60, 0.15));
     border-radius: 10px;
+    transition: background 0.3s;
 }
 .po-quick-list::-webkit-scrollbar-thumb:hover {
-    background: #fb923c;
+    background: linear-gradient(180deg, #fb923c, #f59e0b);
 }
 
 .po-sidebar-header {
@@ -460,23 +629,39 @@ body, html {
 }
 
 .po-list-item {
-    padding: 10px 14px;
-    background-color: rgba(15, 23, 42, 0.8); /* Darker items */
-    border: 1px solid var(--border-color);
+    padding: 6px 10px;
+    background-color: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-left: 3px solid transparent;
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 10px;
-    transition: all 0.2s;
-    color: white;
+    gap: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    color: rgba(255, 255, 255, 0.88);
+    position: relative;
+    flex-shrink: 0;
+    min-height: 32px;
+    box-sizing: border-box;
 }
 
-.po-list-item:hover, .po-list-item.active {
-    background-color: #1e293b;
-    border-color: #fb923c;
-    transform: translateX(4px);
+.po-list-item:hover {
+    background-color: rgba(30, 41, 59, 0.9);
+    border-color: rgba(251, 146, 60, 0.3);
+    border-left-color: var(--accent-color);
+    transform: translateX(3px);
+    box-shadow: 0 2px 12px rgba(251, 146, 60, 0.06);
+    color: #fff;
+}
+
+.po-list-item.active {
+    background-color: rgba(251, 146, 60, 0.08);
+    border-color: rgba(251, 146, 60, 0.4);
+    border-left-color: var(--accent-color);
+    box-shadow: 0 0 14px rgba(251, 146, 60, 0.1);
+    color: #fff;
 }
 
 /* Floating Info Panel */
@@ -1151,12 +1336,15 @@ body, html {
 }
 
 .po-list-item.closed {
-    opacity: 0.6;
-    background: rgba(100, 116, 139, 0.1);
+    opacity: 0.5;
+    background: rgba(100, 116, 139, 0.08);
+    border-left-color: #64748b;
 }
 
 .po-list-item.closed:hover {
-    background: rgba(100, 116, 139, 0.2);
+    background: rgba(100, 116, 139, 0.18);
+    opacity: 0.7;
+    border-left-color: #94a3b8;
 }
 
 .po-list-item.closed i {
@@ -1254,12 +1442,14 @@ body, html {
 .tab-content {
     display: none;
     flex-direction: column;
-    gap: 20px !important;
+    gap: 12px !important;
     padding-top: 10px;
 }
 
 .tab-content.active {
     display: flex !important;
+    flex: 1;
+    min-height: 0;
 }
 
 /* === FLOATING TOOLBAR === */
@@ -1365,26 +1555,238 @@ body, html {
 
 /* === PO SIDEBAR HEADER === */
 .po-sidebar-header {
-    background: #000000; /* Pitch Black */
+    background: linear-gradient(135deg, #0a0e1a, #111827);
     color: white;
     padding: 12px 16px;
     font-weight: 800;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
     gap: 12px;
     border-radius: 12px;
-    border: 1px solid var(--accent-color);
+    border: 1px solid rgba(251, 146, 60, 0.4);
     margin-bottom: 12px;
-    letter-spacing: 0.05em;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    letter-spacing: 0.06em;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
     text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+}
+
+.po-sidebar-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    opacity: 0.6;
 }
 
 .po-sidebar-header i {
     color: var(--accent-color);
     font-size: 1.1rem;
+    filter: drop-shadow(0 0 4px rgba(251, 146, 60, 0.3));
 }
+
+/* === PO List Filter Bar === */
+.po-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.po-filter-input {
+    flex: 1;
+    padding: 8px 12px 8px 32px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    outline: none;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.po-filter-input:focus {
+    border-color: rgba(251, 146, 60, 0.5);
+    box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.1);
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.po-filter-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.po-filter-wrap {
+    position: relative;
+    flex: 1;
+}
+
+.po-filter-wrap i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 0.78rem;
+    pointer-events: none;
+}
+
+.po-collapse-all-btn {
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.78rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.po-collapse-all-btn:hover {
+    background: rgba(251, 146, 60, 0.12);
+    border-color: rgba(251, 146, 60, 0.3);
+    color: var(--accent-color);
+}
+
+/* === CSS cho Nhóm bưu cục theo Huyện === */
+.po-district-group {
+    margin-bottom: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.35);
+    overflow: hidden;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+}
+
+.po-district-group:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.po-district-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    background: rgba(15, 23, 42, 0.6);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.25s ease;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-bottom: 1px solid transparent;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.po-district-header::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent-color), rgba(251, 146, 60, 0.3));
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.po-district-header:hover {
+    background: rgba(30, 41, 59, 0.75);
+}
+
+.po-district-header:hover::before {
+    opacity: 1;
+}
+
+.po-district-header .district-title {
+    flex: 1;
+    color: var(--text-primary);
+    margin-left: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s;
+}
+
+.po-district-header:hover .district-title {
+    color: var(--accent-color);
+}
+
+.po-district-header .district-badge {
+    background: rgba(251, 146, 60, 0.1);
+    border: 1px solid rgba(251, 146, 60, 0.2);
+    color: var(--accent-color);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    min-width: 24px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.po-district-header:hover .district-badge {
+    background: rgba(251, 146, 60, 0.18);
+    border-color: rgba(251, 146, 60, 0.4);
+}
+
+.po-district-header i.toggle-arrow {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 16px;
+    text-align: center;
+}
+
+.po-district-header.collapsed i.toggle-arrow {
+    transform: rotate(-90deg);
+}
+
+.po-district-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px 8px;
+    animation: districtExpand 0.3s ease;
+    min-height: 0;
+}
+
+@keyframes districtExpand {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.po-district-content.collapsed {
+    display: none;
+}
+
+/* Active district group when it has selected POs */
+.po-district-group.has-active {
+    border-color: rgba(251, 146, 60, 0.25);
+    background: rgba(251, 146, 60, 0.03);
+}
+
+.po-district-group.has-active > .po-district-header::before {
+    opacity: 1;
+}
+
 
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
@@ -1405,19 +1807,32 @@ body, html {
         </div>
 
         <!-- Floating Action Buttons (Top Center) -->
-        <div class="floating-top-center no-export">
-            <button id="undoBtn" onclick="undoMap()" disabled title="Hoàn tác (Undo) (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
-            <button id="redoBtn" onclick="redoMap()" disabled title="Làm lại (Redo) (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i></button>
-            <button onclick="captureMap()" title="Chụp ảnh bản đồ"><i class="fa-solid fa-camera"></i></button>
-            <button onclick="toggleMeasure()" title="Thước đo"><i class="fa-solid fa-ruler-combined"></i></button>
-            <button id="resetViewBtnMain" onclick="resetToInitialView()" title="Xem toàn bộ"><i class="fa-solid fa-expand"></i></button>
-        </div>
+            <div class="floating-top-center no-export">
+                <!-- Search input placed before Undo button, styled like other top-center buttons -->
+                <div class="search-box" style="height:48px; margin-right:8px;">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Tìm xã, phường, bưu cục..." style="flex:1; border:none; background:transparent; color:var(--text-primary); font-size:0.95rem;">
+                    <button id="clearSearch" class="clear-btn"><i class="fa-solid fa-xmark"></i></button>
+                    <!-- Search results will appear directly below the box -->
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+                <button id="undoBtn" onclick="undoMap()" disabled title="Hoàn tác (Undo) (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
+                <button id="redoBtn" onclick="redoMap()" disabled title="Làm lại (Redo) (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i></button>
+                <button onclick="captureMap()" title="Chụp ảnh bản đồ"><i class="fa-solid fa-camera"></i></button>
+                <button onclick="toggleMeasure()" title="Thước đo"><i class="fa-solid fa-ruler-combined"></i></button>
+                <button id="resetViewBtnMain" onclick="resetToInitialView()" title="Xem toàn bộ"><i class="fa-solid fa-expand"></i></button>
+            </div>
 
         <!-- Sidebar Menu -->
         <div class="floating-top-left no-export">
-            <div id="toggleLeftMenuBtn" class="panel-toggle-btn">
+            <div id="toggleLeftMenuBtn" class="panel-toggle-btn" style="position: relative; padding-right: 40px;">
                 <span><i class="fa-solid fa-layer-group"></i> ĐIỀU KHIỂN BẢN ĐỒ</span>
-                <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                <div style="display: flex; align-items: center; gap: 10px; position: absolute; right: 16px; top: 50%; transform: translateY(-50%);">
+                    <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                    <button id="collapseSidebarBtn" title="Thu gọn sang trái" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: color 0.2s;" onclick="event.stopPropagation(); collapseLeftSidebar();">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                </div>
             </div>
             
             <div id="leftMenuContent" class="left-menu-content">
@@ -1427,15 +1842,8 @@ body, html {
                     <button id="batchImportBtn" class="action-btn success" style="margin-bottom: 10px;">
                         <i class="fa-solid fa-file-excel"></i> Nhập nhiều Bưu cục (từ Excel)
                     </button>
-                    <button id="clearAllPosBtn" class="action-btn danger" style="margin-bottom: 10px;">
-                        <i class="fa-solid fa-trash-can"></i> Xóa tất cả PO hiện có
-                    </button>
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                        <input type="text" id="searchInput" placeholder="Tìm xã, phường, bưu cục...">
-                        <button id="clearSearch" class="clear-btn"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div id="searchResults" class="search-results"></div>
+                    <!-- Moved clear all PO button to the Tools tab -->
+                    <!-- Search box moved to top toolbar; removed from sidebar -->
                 </div>
 
                 <!-- Stats Bar -->
@@ -1460,7 +1868,7 @@ body, html {
                     <button class="tab-btn" data-tab="tab-tools"><i class="fa-solid fa-wrench"></i> Công cụ</button>
                     <button class="tab-btn" data-tab="tab-po"><i class="fa-solid fa-truck-fast"></i> Bưu cục</button>
                     <button class="tab-btn" data-tab="tab-groups"><i class="fa-solid fa-object-group"></i> Nhóm</button>
-                    <button class="tab-btn" data-tab="tab-sync"><i class="fa-solid fa-cloud-arrow-up"></i> Đồng bộ</button>
+                    <button class="tab-btn" data-tab="tab-details" id="tabDetailsBtn" style="display: none;"><i class="fa-solid fa-circle-info"></i> Chi tiết</button>
                 </div>
 
                 <!-- Tab: Bản đồ -->
@@ -1523,10 +1931,13 @@ body, html {
                     <div class="tool-grid">
                         <button id="resetViewBtn" class="action-btn"><i class="fa-solid fa-expand"></i> Xem toàn bộ</button>
                         <button id="togglePoNamesBtn" class="action-btn"><i class="fa-solid fa-font"></i> <span>Tên bưu cục</span></button>
+                        <button id="toggleHideCommunesBtn" class="action-btn"><i class="fa-solid fa-eye-slash"></i> <span>Ẩn nhãn xã</span></button>
                         <button id="toggleClosedPosBtn" onclick="toggleClosedPosVisibility()" class="action-btn"><i class="fa-solid fa-eye-slash"></i> Ẩn BC đóng</button>
                         <button onclick="captureMap()" class="action-btn"><i class="fa-solid fa-camera"></i> Chụp ảnh</button>
                         <button onclick="toggleMeasure()" class="action-btn"><i class="fa-solid fa-ruler"></i> Thước đo</button>
                         <button id="addPoBtn" class="action-btn btn-add-po"><i class="fa-solid fa-plus"></i> Thêm BC</button>
+                        <!-- Clear all PO button moved from sidebar to tools tab -->
+                        <button id="clearAllPosBtn" class="action-btn danger"><i class="fa-solid fa-trash-can"></i> Xóa tất cả PO hiện có</button>
                     </div>
                     <div class="data-actions">
                         <button id="saveDataBtn" class="btn-data save"><i class="fa-solid fa-save"></i> Lưu lại ngay</button>
@@ -1541,8 +1952,29 @@ body, html {
                 <div id="tab-po" class="tab-content">
                     <div class="po-sidebar-header">
                         <i class="fa-solid fa-truck-fast"></i> DANH SÁCH BƯU CỤC
+                        <span id="poTotalBadge" style="margin-left:auto; background:rgba(251,146,60,0.15); border:1px solid rgba(251,146,60,0.3); color:#fb923c; padding:2px 10px; border-radius:20px; font-size:0.72rem; font-weight:600;"></span>
+                    </div>
+<div class="po-filter-bar">
+                        <div class="po-filter-wrap">
+                            <i class="fa-solid fa-filter"></i>
+                            <input type="text" id="poFilterInput" class="po-filter-input" placeholder="Lọc nhanh bưu cục...">
+                        </div>
+                        <button id="poCollapseAllBtn" class="po-collapse-all-btn" title="Thu gọn / Mở rộng tất cả">
+                            <i class="fa-solid fa-compress"></i> Thu gọn
+                        </button>
                     </div>
                     <div id="poQuickList" class="po-quick-list"></div>
+                </div>
+
+                <!-- Tab: Chi tiết -->
+                <div id="tab-details" class="tab-content">
+                    <div class="main-control-panel" style="flex: 1; min-height: 0; display: flex; flex-direction: column; max-height: calc(100vh - 200px); box-sizing: border-box;">
+                        <div id="leftSidebarInfoContent" style="display: flex; flex-direction: column; gap: 12px; height: 100%; overflow-y: auto; padding: 5px 0;">
+                            <div style="padding: 20px; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
+                                Chọn bưu cục hoặc xã trên bản đồ để xem chi tiết.
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tab: Nhóm xã -->
@@ -1550,60 +1982,22 @@ body, html {
                     <div class="po-sidebar-header">
                         <i class="fa-solid fa-object-group"></i> DANH SÁCH NHÓM XÃ
                     </div>
-                    <div style="padding: 10px; margin-bottom: 10px; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">
-                        <span style="color: #60a5fa; font-weight: bold;"><i class="fa-solid fa-lightbulb"></i> Hướng dẫn:</span>
-                        <ul style="margin: 5px 0 0 0; padding-left: 18px;">
-                            <li>Chọn nhiều vùng (Ctrl + Click) -> Lưu Nhóm.</li>
-                            <li>Ctrl + Click vào Nhóm để xem nhiều Nhóm cùng lúc.</li>
-                        </ul>
+                    <button id="batchImportGroupBtn" class="action-btn success" style="margin-bottom: 10px; width: 100%;">
+                        <i class="fa-solid fa-file-excel"></i> Nhập nhiều Nhóm xã (từ Excel)
+                    </button>
+                    <div class="po-filter-bar">
+                        <div class="po-filter-wrap">
+                            <i class="fa-solid fa-filter"></i>
+                            <input type="text" id="groupFilterInput" class="po-filter-input" placeholder="Lọc nhanh nhóm hoặc xã...">
+                        </div>
+                        <button id="groupCollapseAllBtn" class="po-collapse-all-btn" title="Thu gọn / Mở rộng tất cả">
+                            <i class="fa-solid fa-compress"></i> Thu gọn
+                        </button>
                     </div>
                     <div id="groupsQuickList" class="po-quick-list" style="margin-top: 10px;"></div>
                 </div>
                 
-                <!-- Tab: Đồng bộ Đám mây -->
-                <div id="tab-sync" class="tab-content">
-                    <div class="po-sidebar-header">
-                        <i class="fa-solid fa-cloud"></i> ĐỒNG BỘ ĐÁM MÂY
-                    </div>
-                    
-                    <div class="main-control-panel">
-                        <div class="control-group">
-                            <label><i class="fa-solid fa-link"></i> LINK GOOGLE SHEETS WEB APP</label>
-                            <input type="text" id="cloudSyncUrl" class="custom-select" style="background: rgba(15,23,42,0.5); color: white; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; box-sizing: border-box; width: 100%; font-size: 0.85rem;" placeholder="https://script.google.com/macros/s/.../exec">
-                        </div>
-                        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px; margin-bottom: 15px;">
-                            <button id="saveSyncUrlBtn" class="action-btn success" style="width: auto; padding: 10px 18px;"><i class="fa-solid fa-floppy-disk"></i> Lưu link</button>
-                            <button id="forceSyncBtn" class="action-btn primary" style="width: auto; padding: 10px 18px;"><i class="fa-solid fa-rotate"></i> Đồng bộ ngay</button>
-                        </div>
-                        <div class="sync-status-card" style="padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); font-size: 0.85rem; line-height: 1.6; margin-bottom: 15px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span>Trạng thái:</span>
-                                <span id="syncStatusBadge" style="padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #64748b; color: white;">Chưa thiết lập</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span>Đồng bộ lần cuối:</span>
-                                <span id="lastSyncedTime" style="color: var(--text-secondary);">Chưa có</span>
-                            </div>
-                            <div style="border-top: 1px dashed var(--border-color); margin: 8px 0; padding-top: 8px;">
-                                <span style="color: #fb923c; font-weight: bold;"><i class="fa-solid fa-circle-info"></i> Lợi ích của Đồng bộ:</span>
-                                <ul style="margin: 5px 0 0 0; padding-left: 18px; color: var(--text-secondary); font-size: 0.8rem;">
-                                    <li>Dùng chung dữ liệu bưu cục với đồng nghiệp thời gian thực.</li>
-                                    <li>Bảo vệ dữ liệu không bị mất khi xóa lịch sử trình duyệt.</li>
-                                    <li>Quản lý danh sách trực tiếp trên Google Sheets dễ dàng.</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div style="padding: 10px; border-radius: 8px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);">
-                            <span style="color: #fb923c; font-weight: bold;"><i class="fa-solid fa-circle-play"></i> Hướng dẫn thiết lập:</span>
-                            <ol style="margin: 5px 0 0 0; padding-left: 15px; margin-bottom: 8px;">
-                                <li>Bấm nút dưới đây để lấy mã code Apps Script.</li>
-                                <li>Tạo Google Sheets, dán code và Deploy dưới dạng **Web App**.</li>
-                                <li>Dán link Web App vào ô trên và bấm **Lưu link**.</li>
-                            </ol>
-                            <button id="openSyncGuideBtn" class="action-btn warning" style="width: 100%; font-size: 0.85rem;"><i class="fa-solid fa-book-open"></i> Xem Hướng dẫn & Mã Code</button>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
 
@@ -1629,12 +2023,96 @@ body, html {
             </form>
         </div>
 
-        <!-- Info Panel -->
-        <div id="infoPanel" class="floating-info-panel hidden no-export"></div>
+        <!-- Sidebar Toggle Handle -->
+        <div id="sidebarToggleHandle" onclick="expandLeftSidebar()" title="Mở rộng bảng điều khiển">
+            <i class="fa-solid fa-angles-right"></i>
+        </div>
+
+        <!-- Info Panel (Hidden since it's merged into left sidebar) -->
+        <div id="infoPanel" class="floating-info-panel hidden no-export" style="display: none !important;"></div>
     </div>
 
     <!-- Scripts -->
     <script>
+    // --- Mock Info Panel & Redirect to Left Sidebar Details Tab ---
+    window.collapseLeftSidebar = function() {
+        const sidebar = document.querySelector('.floating-top-left');
+        const handle = document.getElementById('sidebarToggleHandle');
+        if (sidebar && handle) {
+            sidebar.classList.add('sidebar-collapsed');
+            handle.style.display = 'flex';
+        }
+    };
+
+    window.expandLeftSidebar = function() {
+        const sidebar = document.querySelector('.floating-top-left');
+        const handle = document.getElementById('sidebarToggleHandle');
+        if (sidebar && handle) {
+            sidebar.classList.remove('sidebar-collapsed');
+            handle.style.display = 'none';
+        }
+    };
+
+    window.mockInfoPanel = {
+        get innerHTML() {
+            const el = document.getElementById('leftSidebarInfoContent');
+            return el ? el.innerHTML : '';
+        },
+        set innerHTML(val) {
+            const el = document.getElementById('leftSidebarInfoContent');
+            if (el) el.innerHTML = val;
+        },
+        get classList() {
+            return {
+                add: (className) => {
+                    if (className === 'hidden') {
+                        const btn = document.getElementById('tabDetailsBtn');
+                        if (btn) btn.style.display = 'none';
+                        
+                        // Switch back to tab-map ONLY if we are currently on the tab-details
+                        const activeTabBtn = document.querySelector('.tab-btn.active');
+                        if (activeTabBtn && activeTabBtn.getAttribute('data-tab') === 'tab-details') {
+                            const tabMap = document.querySelector('.tab-btn[data-tab="tab-map"]');
+                            if (tabMap) tabMap.click();
+                        }
+                    }
+                },
+                remove: (className) => {
+                    if (className === 'hidden') {
+                        const btn = document.getElementById('tabDetailsBtn');
+                        if (btn) {
+                            btn.style.display = 'inline-block';
+                            // We do NOT call btn.click() automatically anymore!
+                            // We just make the tab button visible so the user can choose to click it when ready.
+                        }
+                    }
+                },
+                toggle: (className, force) => {},
+                contains: (className) => {
+                    const btn = document.getElementById('tabDetailsBtn');
+                    if (className === 'hidden') {
+                        return btn ? btn.style.display === 'none' : true;
+                    }
+                    return false;
+                }
+            };
+        },
+        style: {
+            visibility: 'visible',
+            display: 'none'
+        }
+    };
+
+    const _originalGetElementById = document.getElementById;
+    document.getElementById = function(id) {
+        if (id === 'infoPanel') {
+            return window.mockInfoPanel;
+        }
+        return _originalGetElementById.apply(document, arguments);
+    };
+    
+    // --- End Interceptor ---
+
     window.embeddedCustomData = {"pos":[{"id":"1","name":"Hố Nai 3 dự kiến","lat":10.965732,"lng":106.931439,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.973571829767256,"lng":106.92386262263437}},{"id":"Chưa có","name":"Bưu cục Lộc An-Long Thành-Đồng Nai","lat":10.798783,"lng":107.002275,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.807530745468247,"lng":106.9977848231746}},{"id":"1319","name":"Bưu Cục 110 Nguyễn Huệ-Trảng Bom-Đồng Nai","lat":10.954539,"lng":107.006643,"isCustom":true,"labelLatLng":{"lat":10.962608589240691,"lng":107.00251875719933}},{"id":"20468000","name":"Bưu Cục Bình Sơn-Long Thành-Đồng Nai","lat":10.7917581,"lng":107.0207285,"isCustom":true},{"id":"22541000","name":"Bưu Cục 146 Nguyễn Văn Cừ-Xã Long Thành-Đồng Nai","lat":10.777742,"lng":106.941705,"isCustom":true},{"id":"20473000","name":"Bưu Cục 68 Quốc Lộ 1A-Trảng Bom-Đồng Nai","lat":10.9553138,"lng":106.9673351,"isCustom":true,"labelLatLng":{"lat":10.95431516706275,"lng":106.96826163088073}},{"id":"21451000","name":"Bưu Cục Khu 6 ấp Bàu Cá-Trung Hòa-Trảng Bom-Đồng Nai","lat":10.945621,"lng":107.061884,"isCustom":true},{"id":"22336000","name":"Bưu Cục Quốc Lộ 1A-Bắc Sơn-Trảng Bom-Đồng Nai","lat":10.956136,"lng":106.965119,"isCustom":true,"labelLatLng":{"lat":10.954626400583397,"lng":106.9355039393712}},{"id":"22927000","name":"Bưu Cục 69 Bàu Cạn-Xã Long Phước-Đồng Nai","lat":10.7193705,"lng":107.0249291,"isCustom":true},{"id":"2429","name":"Bưu Cục Long Phước - Long Thành - Đồng Nai","lat":10.6896227,"lng":107.0443439,"isCustom":true},{"id":"123","name":"Trà Sữa","address":"","lat":10.963307,"lng":106.939582,"manager":"","phone":"","isCustom":true,"labelLatLng":{"lat":10.970498876025433,"lng":106.9393080583852}}],"modified":[],"closedIds":[]};
     </script>
     <script src="data_boundaries_new.js"></script>
@@ -1899,6 +2377,13 @@ function mergeMarkerData(baseData, customData) {
         window.closedPoIds = new Set();
     }
     
+    // 5. Cập nhật danh sách ID hiển thị tên bưu cục riêng lẻ
+    if (customData.visibleNamePoIds && Array.isArray(customData.visibleNamePoIds)) {
+        window.visibleNamePoIds = new Set(customData.visibleNamePoIds);
+    } else if (!window.visibleNamePoIds) {
+        window.visibleNamePoIds = new Set();
+    }
+    
     return merged;
 }
 
@@ -1982,12 +2467,18 @@ async function loadProvinceData(provinceName) {
         provincialDataCache[provinceName] = data;
         return data;
     } catch (error) {
-        console.error('Lỗi tải file:', error);
-        // Thử fallback với allMapData nếu tỉnh có sẵn trong dữ liệu nhúng
+        console.warn('Lỗi tải file (có thể do file:// protocol):', error.message);
+        // Fallback 1: allMapData (dữ liệu nhúng cũ)
         if (typeof allMapData !== 'undefined' && allMapData[provinceName]) {
-            console.log(`[BẢN ĐỒ] Dùng dữ liệu nhúng sẵn cho: ${provinceName}`);
+            console.log(`[BẢN ĐỒ] Dùng dữ liệu nhúng sẵn (allMapData) cho: ${provinceName}`);
             provincialDataCache[provinceName] = allMapData[provinceName];
             return allMapData[provinceName];
+        }
+        // Fallback 2: newMapData từ data_boundaries_new.js
+        if (typeof newMapData !== 'undefined' && newMapData[provinceName]) {
+            console.log(`[BẢN ĐỒ] Dùng dữ liệu nhúng (newMapData) cho: ${provinceName}`);
+            provincialDataCache[provinceName] = newMapData[provinceName];
+            return newMapData[provinceName];
         }
         return null;
     }
@@ -2249,7 +2740,7 @@ function updatePostOfficesByProvince(province) {
         }
     });
 
-    if (window.showAllPoNames) {
+    if (window.showAllPoNames || (window.visibleNamePoIds && window.visibleNamePoIds.size > 0)) {
         renderDraggableLabels(posToDisplay);
     } else {
         poLabelLayer.clearLayers();
@@ -2268,26 +2759,163 @@ function updatePostOfficesByProvince(province) {
     if (openEl) openEl.innerText = openCount;
     if (closedEl) closedEl.innerText = closedCount;
 
+    // Định nghĩa hàm phân tích huyện từ tên/địa chỉ bưu cục
+        function getDistrictOfPo(po) {
+        function cleanDistrictName(str) {
+            if (!str) return '';
+            return str.trim()
+                .normalize('NFC')
+                .replace(/hoà/gi, 'hòa')
+                .replace(/oà/gi, 'òa')
+                .replace(/oá/gi, 'óa')
+                .replace(/oả/gi, 'ỏa')
+                .replace(/oã/gi, 'õa')
+                .replace(/oạ/gi, 'ọa');
+        }
+
+        // 1. ƯU TIÊN HÀNG ĐẦU: Nếu bưu cục có thông tin huyện tùy chỉnh (người dùng tự gán), sử dụng ngay
+        if (po.customDistrict) {
+            return cleanDistrictName(po.customDistrict);
+        }
+
+        const districts = ['Trảng Bom', 'Long Thành', 'Biên Hòa', 'Nhơn Trạch', 'Vĩnh Cửu', 'Thống Nhất', 'Xuân Lộc', 'Cẩm Mỹ', 'Định Quán', 'Tân Phú', 'Long Khánh'];
+        
+        // 2. Tự động nhận diện theo tên bưu cục
+        if (po.name) {
+            const nameNorm = cleanDistrictName(po.name).toLowerCase();
+            for (const dist of districts) {
+                const distNorm = cleanDistrictName(dist).toLowerCase();
+                if (nameNorm.includes(distNorm)) {
+                    return dist;
+                }
+            }
+        }
+        
+        // 3. Tự động nhận diện theo địa chỉ
+        if (po.address) {
+            const addrNorm = cleanDistrictName(po.address).toLowerCase();
+            for (const dist of districts) {
+                const distNorm = cleanDistrictName(dist).toLowerCase();
+                if (addrNorm.includes(distNorm)) {
+                    return dist;
+                }
+            }
+        }
+        
+        // 4. Tách theo cấu trúc có dấu gạch ngang làm phương án dự phòng
+        if (po.name) {
+            const parts = po.name.split('-');
+            if (parts.length >= 2) {
+                const potential = parts[parts.length - 2].trim();
+                if (potential && potential.length > 2 && potential.length < 30) {
+                    return cleanDistrictName(potential);
+                }
+            }
+        }
+        
+        return 'Bưu cục tự do / Khác';
+    }
+
     // Cập nhật danh sách hiển thị trong sidebar
     const listContainer = document.getElementById('poQuickList');
     if (listContainer) {
-        listContainer.innerHTML = posToDisplay.map(po => {
-            const isClosed = window.closedPoIds.has(po.id);
-            const statusClass = isClosed ? 'closed' : '';
-            const statusLabel = isClosed ? ' <span style="color: #ef4444;">(Đã đóng)</span>' : '';
-            const isSelected = selectedPoIds.has(po.id);
-            return `
-                <div class="po-list-item ${statusClass} ${isSelected ? 'active' : ''}" data-id="${po.id}" title="${po.name}">
-                    <label style="display:flex;align-items:center;gap:10px;width:100%;margin:0;cursor:pointer;">
-                        <input type="checkbox" class="po-select-checkbox" ${isSelected ? 'checked' : ''} />
-                        <span style="flex:1; min-width:0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${po.name.replace('Bưu Cục ', '')}${statusLabel}</span>
-                    </label>
+        // Khởi tạo biến lưu trạng thái thu gọn/mở rộng của từng huyện trong session/window
+        if (!window.collapsedDistrictsState) {
+            window.collapsedDistrictsState = {};
+        }
+        // Gom nhóm bưu cục theo huyện
+        const groups = {};
+        posToDisplay.forEach(po => {
+            const district = getDistrictOfPo(po);
+            if (!groups[district]) groups[district] = [];
+            groups[district].push(po);
+        });
+
+        // Sắp xếp các huyện (Huyện khác đưa xuống cuối, các huyện còn lại theo bảng chữ cái)
+        const sortedDistricts = Object.keys(groups).sort((a, b) => {
+            if (a.includes('Khác')) return 1;
+            if (b.includes('Khác')) return -1;
+            return a.localeCompare(b, 'vi');
+        });
+
+        let groupsHtml = '';
+        sortedDistricts.forEach(district => {
+            const pos = groups[district];
+            
+            // UX Tinh tế: Nếu trong nhóm huyện này có bưu cục bất kỳ đang được click chọn (active/selected),
+            // ta tự động MỞ RỘNG (expand) nhóm đó để người dùng thấy ngay bưu cục đang chọn.
+            const hasActivePo = pos.some(po => selectedPoIds.has(po.id));
+            if (hasActivePo) {
+                window.collapsedDistrictsState[district] = false;
+            }
+
+            const isCollapsed = window.collapsedDistrictsState[district] === true;
+            const collapseClass = isCollapsed ? 'collapsed' : '';
+
+            const itemsHtml = pos.map(po => {
+                const isClosed = window.closedPoIds.has(po.id);
+                const statusClass = isClosed ? 'closed' : '';
+                const statusLabel = isClosed ? ' <span style="color: #ef4444;">(Đã đóng)</span>' : '';
+                const isSelected = selectedPoIds.has(po.id);
+                const isNameVisible = window.visibleNamePoIds && window.visibleNamePoIds.has(po.id);
+                return `
+                    <div class="po-list-item ${statusClass} ${isSelected ? 'active' : ''}" data-id="${po.id}" title="${po.name}">
+                        <label style="display:flex;align-items:center;gap:10px;width:100%;margin:0;cursor:pointer;min-width:0;flex:1;">
+                            <input type="checkbox" class="po-select-checkbox" ${isSelected ? 'checked' : ''} style="flex-shrink:0;" />
+                            <span style="flex:1; min-width:0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${po.name.replace('Bưu Cục ', '')}${statusLabel}</span>
+                        </label>
+                        <button class="po-toggle-name-btn" data-id="${po.id}" title="Hiện/Ẩn tên bưu cục trên bản đồ" style="background: none; border: none; color: ${isNameVisible ? '#fb923c' : 'var(--text-secondary)'}; cursor: pointer; padding: 4px 6px; transition: all 0.2s; flex-shrink:0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+                            <i class="fa-solid ${isNameVisible ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            groupsHtml += `
+                <div class="po-district-group ${hasActivePo ? 'has-active' : ''}">
+                    <div class="po-district-header ${collapseClass}" data-district="${district}">
+                        <i class="fa-solid fa-chevron-down toggle-arrow"></i>
+                        <span class="district-title">${district}</span>
+                        <span class="district-badge">${pos.length}</span>
+                    </div>
+                    <div class="po-district-content ${collapseClass}">
+                        ${itemsHtml}
+                    </div>
                 </div>
             `;
-        }).join('');
+        });
 
+        listContainer.innerHTML = groupsHtml;
+
+        // Cập nhật badge tổng số bưu cục
+        const totalBadge = document.getElementById('poTotalBadge');
+        if (totalBadge) {
+            totalBadge.textContent = posToDisplay.length + ' bưu cục';
+        }
+
+        // Đăng ký sự kiện đóng/mở (toggle collapse) accordion của các huyện
+        listContainer.querySelectorAll('.po-district-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const district = this.getAttribute('data-district');
+                const content = this.nextElementSibling;
+                const isCollapsed = content.classList.contains('collapsed');
+                
+                if (isCollapsed) {
+                    content.classList.remove('collapsed');
+                    this.classList.remove('collapsed');
+                    window.collapsedDistrictsState[district] = false;
+                } else {
+                    content.classList.add('collapsed');
+                    this.classList.add('collapsed');
+                    window.collapsedDistrictsState[district] = true;
+                }
+            });
+        });
+
+        // Đăng ký sự kiện click chọn bưu cục
         listContainer.querySelectorAll('.po-list-item').forEach(item => {
             const checkbox = item.querySelector('.po-select-checkbox');
+            const toggleNameBtn = item.querySelector('.po-toggle-name-btn');
             const id = item.getAttribute('data-id');
             const po = filteredPOs.find(p => p.id === id);
             if (!po) return;
@@ -2299,8 +2927,16 @@ function updatePostOfficesByProvince(province) {
                 });
             }
 
+            if (toggleNameBtn) {
+                toggleNameBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleIndividualPoName(po.id);
+                });
+            }
+
             item.addEventListener('click', function(e) {
                 if (e.target.closest('.po-select-checkbox')) return;
+                if (e.target.closest('.po-toggle-name-btn')) return;
                 const multi = e.ctrlKey || e.metaKey;
                 if (multi) {
                     togglePoSelection(po, !selectedPoIds.has(po.id));
@@ -2309,6 +2945,72 @@ function updatePostOfficesByProvince(province) {
                 }
             });
         });
+
+        // === Tính năng lọc nhanh bưu cục ===
+        const filterInput = document.getElementById('poFilterInput');
+        if (filterInput) {
+            filterInput.addEventListener('input', function() {
+                const keyword = this.value.toLowerCase().trim();
+                listContainer.querySelectorAll('.po-district-group').forEach(group => {
+                    const items = group.querySelectorAll('.po-list-item');
+                    let visibleCount = 0;
+                    items.forEach(item => {
+                        const name = (item.getAttribute('title') || '').toLowerCase();
+                        if (!keyword || name.includes(keyword)) {
+                            item.style.display = '';
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    // Ẩn cả nhóm huyện nếu không có bưu cục nào khớp
+                    group.style.display = visibleCount === 0 ? 'none' : '';
+                    // Tự động mở rộng nhóm nếu đang tìm kiếm
+                    if (keyword && visibleCount > 0) {
+                        const header = group.querySelector('.po-district-header');
+                        const content = group.querySelector('.po-district-content');
+                        if (header && content) {
+                            header.classList.remove('collapsed');
+                            content.classList.remove('collapsed');
+                        }
+                    }
+                    // Cập nhật badge đếm số hiển thị
+                    const badge = group.querySelector('.district-badge');
+                    if (badge) {
+                        badge.textContent = visibleCount;
+                    }
+                });
+            });
+        }
+
+        // === Nút thu gọn / mở rộng tất cả ===
+        const collapseAllBtn = document.getElementById('poCollapseAllBtn');
+        if (collapseAllBtn) {
+            collapseAllBtn.onclick = function() {
+                const allHeaders = listContainer.querySelectorAll('.po-district-header');
+                const anyExpanded = Array.from(allHeaders).some(h => !h.classList.contains('collapsed'));
+                allHeaders.forEach(header => {
+                    const content = header.nextElementSibling;
+                    const district = header.getAttribute('data-district');
+                    if (anyExpanded) {
+                        header.classList.add('collapsed');
+                        if (content) content.classList.add('collapsed');
+                        window.collapsedDistrictsState[district] = true;
+                    } else {
+                        header.classList.remove('collapsed');
+                        if (content) content.classList.remove('collapsed');
+                        window.collapsedDistrictsState[district] = false;
+                    }
+                });
+                // Toggle button label
+                const icon = this.querySelector('i');
+                if (anyExpanded) {
+                    this.innerHTML = '<i class="fa-solid fa-expand"></i> Mở rộng';
+                } else {
+                    this.innerHTML = '<i class="fa-solid fa-compress"></i> Thu gọn';
+                }
+            };
+        }
     }
 }
 
@@ -2540,6 +3242,18 @@ function editPoCoverage(po) {
     updatePostOfficesByProvince();
     selectSinglePo(po);
     showToast('Đã cập nhật danh sách xã cover cho bưu cục.', 'success');
+}
+
+// Prompt để chỉnh sửa huyện tùy chỉnh
+function promptDistrictEdit(po) {
+    const current = po.customDistrict || '';
+    const newDistrict = prompt("Nhập tên huyện cho bưu cục này (để trống để bỏ qua):", current);
+    if (newDistrict === null) return;
+    po.customDistrict = newDistrict.trim() || undefined;
+    po.isModified = true;
+    saveToLocalStorage();
+    updatePostOfficesByProvince();
+    showToast('Đã cập nhật huyện cho bưu cục.', 'success');
 }
 
 function selectSinglePo(po) {
@@ -2861,6 +3575,10 @@ function editPostOffice(po) {
                     <label><i class="fa-solid fa-map-location-dot"></i> Địa chỉ</label>
                     <input type="text" id="editPoAddress">
                 </div>
+                <div class="edit-field">
+                    <label><i class="fa-solid fa-building"></i> Huyện (tuỳ chỉnh)</label>
+                    <input type="text" id="editPoDistrict" placeholder="Nhập tên huyện hoặc để trống">
+                </div>
                 <div style="display: flex; gap: 10px;">
                     <div class="edit-field" style="flex: 1;">
                         <label><i class="fa-solid fa-location-dot"></i> Vĩ độ (Lat)</label>
@@ -2900,6 +3618,7 @@ function editPostOffice(po) {
     document.getElementById('editPoLng').value = po.lng || '';
     document.getElementById('editPoManager').value = po.manager || '';
     document.getElementById('editPoPhone').value = po.phone || '';
+    document.getElementById('editPoDistrict').value = po.customDistrict || '';
 
     // Bind nút Hủy
     document.getElementById('cancelEditBtn').addEventListener('click', () => selectPostOffice(po));
@@ -2909,6 +3628,7 @@ function editPostOffice(po) {
     document.getElementById('editPoForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
+
         const newId = document.getElementById('editPoId').value.trim();
         const newName = document.getElementById('editPoName').value.trim();
         const newAddress = document.getElementById('editPoAddress').value.trim();
@@ -2916,6 +3636,7 @@ function editPostOffice(po) {
         const newLng = parseFloat(document.getElementById('editPoLng').value);
         const newManager = document.getElementById('editPoManager').value.trim();
         const newPhone = document.getElementById('editPoPhone').value.trim();
+        const newDistrict = document.getElementById('editPoDistrict').value.trim();
 
         if (!newId || !newName || isNaN(newLat) || isNaN(newLng)) {
             return showToast('Vui lòng nhập đầy đủ mã, tên và tọa độ!', 'warning');
@@ -2942,6 +3663,12 @@ function editPostOffice(po) {
         po.lng = newLng;
         po.manager = newManager;
         po.phone = newPhone;
+        // Save custom district if provided
+        if (newDistrict) {
+            po.customDistrict = newDistrict;
+        } else {
+            delete po.customDistrict;
+        }
 
         // Đánh dấu đã chỉnh sửa (cho bưu cục không phải tự thêm)
         if (!po.isCustom) {
@@ -3023,12 +3750,93 @@ function updateLabels() {
     const fontSize = currentZoom >= 13 ? '13px' : '11px';
     const padding = currentZoom >= 13 ? '3px 8px' : '2px 6px';
 
+    // Xây dựng tập hợp các nhãn xã được phép hiển thị nếu đang bật ẩn nhãn xã
+    let allowedCommuneKeys = null;
+    if (window.hideCommuneLabels) {
+        allowedCommuneKeys = new Set();
+        
+        // 1. Lấy từ các bưu cục được chọn
+        if (typeof selectedPoIds !== 'undefined' && selectedPoIds.size > 0 && typeof postOffices !== 'undefined') {
+            selectedPoIds.forEach(poId => {
+                const po = postOffices.find(p => p.id === poId);
+                if (po && po.communeIds) {
+                    po.communeIds.forEach(cId => {
+                        const val = cId.trim();
+                        if (val) {
+                            if (typeof normalizeCommuneToken === 'function') {
+                                allowedCommuneKeys.add(normalizeCommuneToken(val));
+                            } else {
+                                allowedCommuneKeys.add(val.toLowerCase());
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        
+        // 2. Lấy từ các nhóm xã được chọn
+        if (window.selectedGroups && window.selectedGroups.size > 0 && window.mapAreaGroups) {
+            window.selectedGroups.forEach(groupId => {
+                const group = window.mapAreaGroups.find(g => g.id === groupId);
+                if (group && group.communes) {
+                    group.communes.forEach(c => {
+                        if (c.id) allowedCommuneKeys.add(c.id.toString().trim());
+                        if (c.name) {
+                            if (typeof normalizeCommuneToken === 'function') {
+                                allowedCommuneKeys.add(normalizeCommuneToken(c.name));
+                            } else {
+                                allowedCommuneKeys.add(c.name.toLowerCase().trim());
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // 3. Lấy từ các xã đang được chọn trực tiếp trên bản đồ
+        if (typeof selectedFeatures !== 'undefined' && selectedFeatures.size > 0) {
+            selectedFeatures.forEach(layer => {
+                if (layer.feature && layer.feature.properties) {
+                    const maXa = layer.feature.properties.ma_xa;
+                    const tenXa = layer.feature.properties.ten_xa;
+                    if (maXa) allowedCommuneKeys.add(maXa.toString().trim());
+                    if (tenXa) {
+                        if (typeof normalizeCommuneToken === 'function') {
+                            allowedCommuneKeys.add(normalizeCommuneToken(tenXa));
+                        } else {
+                            allowedCommuneKeys.add(tenXa.toLowerCase().trim());
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     activeLayers.forEach(provinceLayer => {
         provinceLayer.eachLayer(function(layer) {
             const center = layer.getBounds().getCenter();
             
             if (bounds.contains(center)) {
                 const name = layer.feature.properties.ten_xa;
+                const code = layer.feature.properties.ma_xa;
+                
+                // Lọc nhãn xã nếu đang ẩn nhãn xã
+                if (allowedCommuneKeys) {
+                    let isAllowed = false;
+                    if (code && allowedCommuneKeys.has(code.toString().trim())) {
+                        isAllowed = true;
+                    }
+                    if (!isAllowed && name) {
+                        const normName = typeof normalizeCommuneToken === 'function' 
+                            ? normalizeCommuneToken(name) 
+                            : name.toLowerCase().trim();
+                        if (allowedCommuneKeys.has(normName)) {
+                            isAllowed = true;
+                        }
+                    }
+                    if (!isAllowed) return; // Ẩn nhãn xã này
+                }
+                
                 if (name) {
                     const labelMarker = L.marker(center, {
                         icon: L.divIcon({
@@ -3126,6 +3934,10 @@ function selectFeature(e) {
             if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
             if (typeof renderGroupsList === 'function') renderGroupsList();
         }
+        
+    if (typeof updateLabels === 'function') {
+        updateLabels();
+    }
 }
 
 function applySelectedStyle(layer) {
@@ -3202,10 +4014,19 @@ function updateSidebar(selectedSet) {
                     <div class="info-row" style="flex: 1;"><span class="info-label">Tổng Diện Tích</span><span class="info-value highlight">${formatNumber(parseFloat(totalArea.toFixed(2)))} km²</span></div>
                     <div class="info-row" style="flex: 1;"><span class="info-label">Tổng Dân Số</span><span class="info-value highlight">${formatNumber(totalPop)} người</span></div>
                 </div>
-                <div style="margin-top: 15px;">
+                <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
                     <button class="action-btn" style="width: 100%; background: #3b82f6; border-color: #2563eb; color: white;" onclick="promptCreateGroup()">
-                        <i class="fa-solid fa-object-group"></i> Lưu các vùng đã chọn thành Nhóm
+                        <i class="fa-solid fa-plus-circle"></i> Lưu thành Nhóm mới
                     </button>
+                    
+                    <div id="addToExistingGroupContainer" style="display: flex; gap: 8px; align-items: center;">
+                        <select id="existingGroupSelect" style="flex: 1; height: 36px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(15,23,42,0.6); color: white; font-size: 0.85rem; outline: none; cursor: pointer;">
+                            <option value="">-- Chọn nhóm có sẵn --</option>
+                        </select>
+                        <button id="addToExistingGroupBtn" class="action-btn success" style="width: auto; height: 36px; padding: 0 12px; display: flex; align-items: center; justify-content: center; gap: 6px;" title="Thêm các xã đã chọn vào nhóm này">
+                            <i class="fa-solid fa-plus"></i> Thêm vào
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -3226,6 +4047,58 @@ function updateSidebar(selectedSet) {
             if (typeof renderGroupsList === 'function') renderGroupsList();
         }
     });
+
+    // Populate existing groups dropdown in sidebar
+    const selectEl = document.getElementById('existingGroupSelect');
+    if (selectEl && window.mapAreaGroups) {
+        const currentDS = document.getElementById('dataSourceSelect') ? document.getElementById('dataSourceSelect').value : 'legacy';
+        const visibleGroups = window.mapAreaGroups.filter(g => !g.dataSource || g.dataSource === currentDS);
+        visibleGroups.forEach(g => {
+            const opt = document.createElement('option');
+            opt.value = g.id;
+            opt.textContent = g.name;
+            selectEl.appendChild(opt);
+        });
+    }
+
+    const addBtn = document.getElementById('addToExistingGroupBtn');
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            const selectVal = document.getElementById('existingGroupSelect').value;
+            if (!selectVal) {
+                return showToast('Vui lòng chọn một nhóm có sẵn!', 'warning');
+            }
+            
+            const targetGroup = window.mapAreaGroups.find(g => g.id === selectVal);
+            if (!targetGroup) return;
+
+            let addedCount = 0;
+            selectedFeatures.forEach(layer => {
+                const maXa = layer.feature.properties.ma_xa;
+                const tenXa = layer.feature.properties.ten_xa;
+                
+                if (!targetGroup.communes.some(c => c.id === maXa)) {
+                    targetGroup.communes.push({ id: maXa, name: tenXa });
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                saveAreaGroups();
+                drawSelectedGroups();
+                showToast(`Đã thêm ${addedCount} xã vào nhóm "${targetGroup.name}"`, 'success');
+                selectedFeatures.forEach(layer => {
+                    if (layer.parentProvinceLayer) {
+                        layer.parentProvinceLayer.resetStyle(layer);
+                    }
+                });
+                selectedFeatures.clear();
+                updateSidebar(selectedFeatures);
+            } else {
+                showToast('Tất cả các xã được chọn đã nằm trong nhóm này rồi!', 'info');
+            }
+        });
+    }
 
 }
 
@@ -3461,7 +4334,7 @@ function removeVietnameseTones(str) {
 // Hàm vẽ nhãn bưu cục có thể kéo thả
 function renderDraggableLabels(posToRender) {
     poLabelLayer.clearLayers();
-    if (!window.showAllPoNames) return;
+    if (!window.showAllPoNames && (!window.visibleNamePoIds || window.visibleNamePoIds.size === 0)) return;
     
     const activePOs = posToRender || [];
     if (!posToRender) {
@@ -3472,6 +4345,9 @@ function renderDraggableLabels(posToRender) {
 
     activePOs.forEach(po => {
         if (po.lat && po.lng) {
+            const shouldShow = window.showAllPoNames || (window.visibleNamePoIds && window.visibleNamePoIds.has(po.id));
+            if (!shouldShow) return;
+
             // Lấy tọa độ nhãn (nếu đã kéo thả thì dùng lại, không thì dịch lên một chút)
             const labelLatLng = po.labelLatLng || [po.lat + 0.002, po.lng];
             
@@ -3510,9 +4386,24 @@ function renderDraggableLabels(posToRender) {
     });
 }
 
+// Hàm bật/tắt hiển thị tên bưu cục riêng lẻ
+function toggleIndividualPoName(poId) {
+    if (!window.visibleNamePoIds) {
+        window.visibleNamePoIds = new Set();
+    }
+    if (window.visibleNamePoIds.has(poId)) {
+        window.visibleNamePoIds.delete(poId);
+    } else {
+        window.visibleNamePoIds.add(poId);
+    }
+    updatePostOfficesByProvince();
+    saveToLocalStorage();
+}
+
 // Xử lý nút bật/tắt hiển thị tên bưu cục
 const togglePoNamesBtn = document.getElementById('togglePoNamesBtn');
 window.showAllPoNames = false;
+window.visibleNamePoIds = new Set();
 
 if (togglePoNamesBtn) {
     togglePoNamesBtn.addEventListener('click', function() {
@@ -3527,6 +4418,25 @@ if (togglePoNamesBtn) {
             this.classList.remove('active');
             poLabelLayer.clearLayers();
         }
+    });
+}
+
+// Xử lý nút bật/tắt ẩn nhãn xã
+const toggleHideCommunesBtn = document.getElementById('toggleHideCommunesBtn');
+window.hideCommuneLabels = false;
+
+if (toggleHideCommunesBtn) {
+    toggleHideCommunesBtn.addEventListener('click', function() {
+        window.hideCommuneLabels = !window.hideCommuneLabels;
+        const span = this.querySelector('span');
+        if (window.hideCommuneLabels) {
+            span.innerText = "Hiện nhãn xã";
+            this.classList.add('active');
+        } else {
+            span.innerText = "Ẩn nhãn xã";
+            this.classList.remove('active');
+        }
+        updateLabels();
     });
 }
 
@@ -3792,33 +4702,9 @@ function importCustomPOs(event) {
     reader.readAsText(file);
 }
 
-// Biến cấu hình Cloud Sync
-window.cloudSyncUrl = localStorage.getItem('ghn_cloud_sync_url') || '';
 
-function updateSyncStatus(status, text) {
-    const badge = document.getElementById('syncStatusBadge');
-    const lastTime = document.getElementById('lastSyncedTime');
-    if (!badge) return;
 
-    badge.innerText = text;
-    if (status === 'synced') {
-        badge.style.background = '#10b981'; // Green
-        badge.style.color = 'white';
-        if (lastTime) {
-            const now = new Date();
-            lastTime.innerText = now.toLocaleTimeString() + ' ' + now.toLocaleDateString();
-        }
-    } else if (status === 'syncing') {
-        badge.style.background = '#fb923c'; // Orange
-        badge.style.color = 'white';
-    } else if (status === 'error') {
-        badge.style.background = '#ef4444'; // Red
-        badge.style.color = 'white';
-    } else {
-        badge.style.background = '#64748b'; // Slate
-        badge.style.color = 'white';
-    }
-}
+
 
 function getCurrentDataSource() {
     const dsSelect = document.getElementById('dataSourceSelect');
@@ -3920,7 +4806,7 @@ function reloadCurrentSourceData() {
     }
 }
 
-// Quản lý PO tự thêm (LocalStorage / Cloud Sync / Data Bridge)
+// Quản lý PO tự thêm (LocalStorage / Data Bridge)
 async function _originalSaveToLocalStorage() {
     const currentDS = getCurrentDataSource();
     const customPOs = postOffices
@@ -3946,46 +4832,21 @@ async function _originalSaveToLocalStorage() {
         pos: customPOs,
         modified: modifiedPOs,
         closedIds: Array.from(window.closedPoIds),
+        visibleNamePoIds: Array.from(window.visibleNamePoIds || []),
         groups: (window.mapAreaGroups || []).filter(g => !g.dataSource || g.dataSource === currentDS)
     };
 
     const savedData = mergeSourceDeltaIntoSave(loadRawSavedDelta() || {}, deltaData);
 
-    // 1. Luôn lưu vào LocalStorage cục bộ để đề phòng offline
+    // 1. Lưu vào LocalStorage cục bộ
     localStorage.setItem('ghn_map_delta', JSON.stringify(savedData));
 
-    // 2. Thử đồng bộ lên đám mây (Google Sheets Web App) nếu có cấu hình
-    if (window.cloudSyncUrl) {
-        updateSyncStatus('syncing', 'Đang đồng bộ...');
-        try {
-            const response = await fetch(window.cloudSyncUrl, {
-                method: 'POST',
-                mode: 'cors',
-                body: JSON.stringify(deltaData)
-            });
-            if (response.ok) {
-                const resData = await response.json();
-                if (resData && resData.success) {
-                    console.log('✅ Đã đồng bộ lên đám mây thành công!');
-                    updateSyncStatus('synced', 'Đã đồng bộ');
-                    showToast('Đã tự động đồng bộ lên Google Sheets!', 'success');
-                    return;
-                }
-            }
-            throw new Error('Lỗi từ Google Apps Script');
-        } catch (e) {
-            console.error('❌ Lỗi đồng bộ đám mây:', e);
-            updateSyncStatus('error', 'Lỗi tải lên Cloud');
-            showToast('Không thể đồng bộ lên Google Sheets (đang lưu offline)', 'warning');
-        }
-    }
-
-    // 3. Thử lưu qua Data Bridge (Node.js)
+    // 2. Thử lưu qua Data Bridge (Node.js)
     try {
         const response = await fetch('http://localhost:3000/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(deltaData)
+            body: JSON.stringify(savedData) // Gửi savedData đầy đủ thay vì deltaData để bảo toàn dữ liệu đa nguồn
         });
         if (response.ok) {
             console.log('✅ Đã lưu dữ liệu tùy chỉnh vào ổ cứng');
@@ -3997,13 +4858,14 @@ async function _originalSaveToLocalStorage() {
 }
 
 function clearAllPostOfficeData() {
-    // Reset trạng thái local và lưu lại file delta trống để tránh reload lại dữ liệu cũ từ cloud/bridge.
+    // Reset trạng thái local và lưu lại file delta trống để tránh reload lại dữ liệu cũ từ bridge.
     const emptyDelta = {
-        legacy: { pos: [], modified: [], closedIds: [], groups: [] },
-        new: { pos: [], modified: [], closedIds: [], groups: [] },
+        legacy: { pos: [], modified: [], closedIds: [], visibleNamePoIds: [], groups: [] },
+        new: { pos: [], modified: [], closedIds: [], visibleNamePoIds: [], groups: [] },
         pos: [],
         modified: [],
         closedIds: [],
+        visibleNamePoIds: [],
         groups: [],
         source: getCurrentDataSource()
     };
@@ -4011,6 +4873,7 @@ function clearAllPostOfficeData() {
     localStorage.setItem('mapAreaGroups', JSON.stringify([]));
     window.closedPoIds = new Set();
     window.selectedPoIds = new Set();
+    window.visibleNamePoIds = new Set();
     if (window.selectedGroups && typeof window.selectedGroups.clear === 'function') {
         window.selectedGroups.clear();
     }
@@ -4053,66 +4916,96 @@ async function loadFromLocalStorage() {
     const loadDeltaFromSaved = (savedText) => {
         if (!savedText) return null;
         try {
-            const parsed = JSON.parse(savedText);
+            const parsed = typeof savedText === 'string' ? JSON.parse(savedText) : savedText;
             return getDeltaForCurrentSource(parsed);
         } catch (e) {
-            console.warn('⚠️ Dữ liệu localStorage bị lỗi, bỏ qua:', e);
+            console.warn('⚠️ Dữ liệu JSON bị lỗi, bỏ qua:', e);
             return null;
         }
     };
 
-    // 1. Fallback: Nạp từ LocalStorage trước tiên để ưu tiên dữ liệu lưu trên máy
-    const saved = localStorage.getItem('ghn_map_delta');
-    if (saved) {
-        customData = loadDeltaFromSaved(saved);
-        if (customData) {
-            console.log('✅ Đã nạp dữ liệu từ LocalStorage');
+    const hasData = (data) => {
+        if (!data) return false;
+        // Check nested format
+        if (data.legacy || data.new) {
+            const hasLegacy = data.legacy && (
+                (Array.isArray(data.legacy.pos) && data.legacy.pos.length > 0) ||
+                (Array.isArray(data.legacy.modified) && data.legacy.modified.length > 0) ||
+                (Array.isArray(data.legacy.closedIds) && data.legacy.closedIds.length > 0) ||
+                (Array.isArray(data.legacy.groups) && data.legacy.groups.length > 0)
+            );
+            const hasNew = data.new && (
+                (Array.isArray(data.new.pos) && data.new.pos.length > 0) ||
+                (Array.isArray(data.new.modified) && data.new.modified.length > 0) ||
+                (Array.isArray(data.new.closedIds) && data.new.closedIds.length > 0) ||
+                (Array.isArray(data.new.groups) && data.new.groups.length > 0)
+            );
+            return hasLegacy || hasNew;
         }
-    }
+        // Check flat format
+        return (Array.isArray(data.pos) && data.pos.length > 0) ||
+               (Array.isArray(data.modified) && data.modified.length > 0) ||
+               (Array.isArray(data.closedIds) && data.closedIds.length > 0) ||
+               (Array.isArray(data.groups) && data.groups.length > 0);
+    };
 
-    // 2. Nếu không có localStorage, thử tải từ Data Bridge
-    if (!customData) {
-        try {
-            const response = await fetch('http://localhost:3000/load');
-            if (response.ok) {
-                customData = getDeltaForCurrentSource(await response.json());
+    // 1. Ưu tiên hàng đầu: Tải dữ liệu từ Data Bridge (ổ cứng)
+    try {
+        const _bridgeController = new AbortController();
+        const _bridgeTimeout = setTimeout(() => _bridgeController.abort(), 3000); // timeout 3 giây
+        const response = await fetch('http://localhost:3000/load', { signal: _bridgeController.signal });
+        clearTimeout(_bridgeTimeout);
+        if (response.ok) {
+            const jsonText = await response.text();
+            const parsed = JSON.parse(jsonText);
+            
+            // Chỉ sử dụng nếu file trên ổ cứng có dữ liệu thực sự
+            if (hasData(parsed)) {
+                customData = getDeltaForCurrentSource(parsed);
                 console.log('✅ Đã nạp dữ liệu tùy chỉnh từ ổ cứng (Data Bridge)');
-            }
-        } catch (e) {
-            console.warn('⚠️ Không thể nạp từ Data Bridge');
-        }
-    }
-
-    // 3. Nếu vẫn chưa có, thử nạp từ Cloud Sync
-    if (!customData && window.cloudSyncUrl) {
-        updateSyncStatus('syncing', 'Đang tải...');
-        try {
-            const response = await fetch(window.cloudSyncUrl, {
-                mode: 'cors',
-                headers: { 'Accept': 'application/json' }
-            });
-            if (response.ok) {
-                customData = getDeltaForCurrentSource(await response.json());
-                console.log('✅ Đã nạp dữ liệu từ đám mây (Google Sheets)');
-                updateSyncStatus('synced', 'Đã đồng bộ');
-                showToast('Đã cập nhật dữ liệu mới nhất từ Google Sheets!', 'success');
+                // Cập nhật lại localStorage để đảm bảo đồng nhất
+                localStorage.setItem('ghn_map_delta', jsonText);
             } else {
-                throw new Error('Không thể fetch từ Cloud URL');
+                console.log('ℹ️ Dữ liệu trên ổ cứng trống, đang kiểm tra LocalStorage...');
             }
-        } catch (e) {
-            console.error('❌ Lỗi nạp từ đám mây:', e);
-            updateSyncStatus('error', 'Lỗi kết nối Cloud');
-            showToast('Lỗi kết nối đám mây, đang nạp dữ liệu offline...', 'warning');
+        }
+    } catch (e) {
+        console.warn('⚠️ Không thể kết nối Data Bridge (ổ cứng), sẽ sử dụng LocalStorage làm fallback...');
+    }
+
+    // 2. Fallback: Nếu không kết nối được hoặc file ổ cứng trống, nạp từ LocalStorage
+    if (!customData) {
+        const saved = localStorage.getItem('ghn_map_delta');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (hasData(parsed)) {
+                    customData = getDeltaForCurrentSource(parsed);
+                    console.log('✅ Đã nạp dữ liệu từ LocalStorage làm dự phòng');
+                    
+                    // Nếu nạp thành công từ localStorage mà trước đó Data Bridge bị trống
+                    // Ta tự động lưu ngược lại ổ cứng để bảo toàn dữ liệu
+                    setTimeout(async () => {
+                        if (typeof saveToLocalStorage === 'function') {
+                            print_str = '🔄 Đang tự động lưu dữ liệu từ LocalStorage lên ổ cứng...';
+                            console.log(print_str);
+                            await saveToLocalStorage();
+                        }
+                    }, 3000);
+                }
+            } catch (e) {
+                console.warn('⚠️ Dữ liệu LocalStorage bị lỗi:', e);
+            }
         }
     }
 
-    // 4. Thử nạp từ Build snapshot nếu chưa có dữ liệu nào khác
+    // 3. Thử nạp từ Build snapshot nếu chưa có dữ liệu nào khác
     if (!customData && window.embeddedCustomData) {
         customData = getDeltaForCurrentSource(window.embeddedCustomData);
         console.log('✅ Đã nạp dữ liệu từ Build Snapshot');
     }
 
-    // 5. Thực hiện hợp nhất nếu có dữ liệu gốc
+    // 4. Thực hiện hợp nhất nếu có dữ liệu gốc
     if (typeof basePostOffices !== 'undefined') {
         postOffices = mergeMarkerData(basePostOffices, customData);
     } else if (customData && customData.pos) {
@@ -4123,11 +5016,17 @@ async function loadFromLocalStorage() {
         } else {
             window.closedPoIds = new Set();
         }
+        if (customData.visibleNamePoIds && Array.isArray(customData.visibleNamePoIds)) {
+            window.visibleNamePoIds = new Set(customData.visibleNamePoIds);
+        } else {
+            window.visibleNamePoIds = new Set();
+        }
     } else {
         window.closedPoIds = new Set();
+        window.visibleNamePoIds = new Set();
     }
 
-    // Nap nhom xa tu cloud/bridge neu co, KHONG ghi de neu cloud tra ve rong
+    // Nap nhom xa tu bridge neu co, KHONG ghi de neu bridge tra ve rong
     if (customData && customData.groups && customData.groups.length > 0) {
         window.mapAreaGroups = customData.groups;
         if (typeof saveAreaGroups === 'function') saveAreaGroups();
@@ -4253,24 +5152,7 @@ function resetToInitialView() {
 
 // Init
 document.addEventListener('DOMContentLoaded', async () => {
-    // ====== CLOUD SYNC INITIALIZE ======
-    const cloudSyncUrlInput = document.getElementById('cloudSyncUrl');
-    const saveSyncUrlBtn = document.getElementById('saveSyncUrlBtn');
-    const forceSyncBtn = document.getElementById('forceSyncBtn');
-    const openSyncGuideBtn = document.getElementById('openSyncGuideBtn');
-    
-    const cloudSyncGuideModal = document.getElementById('cloudSyncGuideModal');
-    const closeSyncGuideModalBtn = document.getElementById('closeSyncGuideModalBtn');
-    const closeSyncGuideModalBtn2 = document.getElementById('closeSyncGuideModalBtn2');
-    const copyAppsScriptBtn = document.getElementById('copyAppsScriptBtn');
-    const appsScriptCodeTextarea = document.getElementById('appsScriptCodeTextarea');
 
-    if (cloudSyncUrlInput) {
-        cloudSyncUrlInput.value = window.cloudSyncUrl;
-        if (window.cloudSyncUrl) {
-            updateSyncStatus('synced', 'Đã lưu cấu hình');
-        }
-    }
 
     const savedDataSource = localStorage.getItem('ghn_data_source');
     const dsSelect = document.getElementById('dataSourceSelect');
@@ -4279,199 +5161,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (window.location.protocol === 'file:' || window.location.origin === 'null') {
-        showToast('Trang đang mở từ file://; hãy chạy bằng HTTP server để đồng bộ Google Sheets và nạp JSON cục bộ đúng.', 'warning');
+        showToast('Trang đang mở từ file://; hãy chạy bằng HTTP server để nạp JSON cục bộ đúng.', 'warning');
     }
 
-    if (saveSyncUrlBtn && cloudSyncUrlInput) {
-        saveSyncUrlBtn.addEventListener('click', async () => {
-            const url = cloudSyncUrlInput.value.trim();
-            if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
-                showToast('Đường dẫn Web App không hợp lệ! Phải bắt đầu bằng https://', 'error');
-                return;
-            }
-            window.cloudSyncUrl = url;
-            localStorage.setItem('ghn_cloud_sync_url', url);
-            showToast('Đã lưu cấu hình Cloud Sync!', 'success');
-            
-            if (url) {
-                await loadFromLocalStorage();
-            } else {
-                updateSyncStatus('none', 'Chưa thiết lập');
-            }
-        });
-    }
 
-    if (forceSyncBtn) {
-        forceSyncBtn.addEventListener('click', async () => {
-            if (!window.cloudSyncUrl) {
-                showToast('Vui lòng cấu hình và lưu Link Web App trước!', 'warning');
-                return;
-            }
-            showToast('Đang đồng bộ dữ liệu đám mây...', 'info');
-            await loadFromLocalStorage();
-            await saveToLocalStorage();
-        });
-    }
 
-    const appsScriptCode = `// Google Apps Script - Cơ sở dữ liệu cho Bản đồ GHN tự làm
-// Lưu ý: Deploy Web App với quyền truy cập "Anyone, even anonymous".
-// Sau đó dán URL exec vào ô LINK GOOGLE SHEETS WEB APP.
-function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  // 1. Tải dữ liệu Bưu cục từ sheet "BuuCucTuyChinh"
-  var sheetPO = ss.getSheetByName("BuuCucTuyChinh");
-  var pos = [];
-  if (sheetPO) {
-    var dataPO = sheetPO.getDataRange().getValues();
-    for (var i = 1; i < dataPO.length; i++) {
-      var id = String(dataPO[i][0] || '').trim();
-      var name = String(dataPO[i][1] || '').trim();
-      var lat = parseFloat(dataPO[i][2]);
-      var lng = parseFloat(dataPO[i][3]);
-      var manager = String(dataPO[i][4] || '').trim();
-      var phone = String(dataPO[i][5] || '').trim();
-      var address = String(dataPO[i][6] || '').trim();
-      var labelLat = parseFloat(dataPO[i][7]);
-      var labelLng = parseFloat(dataPO[i][8]);
-      var communeIdsRaw = String(dataPO[i][9] || '').trim();
-      var communeIds = [];
-      if (communeIdsRaw) {
-        communeIds = communeIdsRaw.split(/[;,]+/).map(function(item) { return item.trim(); }).filter(Boolean);
-      }
-      
-      if (id && name && !isNaN(lat) && !isNaN(lng)) {
-        var po = {
-          id: id,
-          name: name,
-          lat: lat,
-          lng: lng,
-          manager: manager,
-          phone: phone,
-          address: address,
-          communeIds: communeIds,
-          isCustom: true
-        };
-        if (!isNaN(labelLat) && !isNaN(labelLng)) {
-          po.labelLatLng = { lat: labelLat, lng: labelLng };
-        }
-        pos.push(po);
-      }
-    }
-  }
-  
-  // 2. Tải các trạng thái khác từ sheet "TrangThaiKhac"
-  var sheetOther = ss.getSheetByName("TrangThaiKhac");
-  var modified = [];
-  var closedIds = [];
-  var groups = [];
-  if (sheetOther) {
-    var dataOther = sheetOther.getDataRange().getValues();
-    for (var i = 1; i < dataOther.length; i++) {
-      var type = String(dataOther[i][0] || '').trim();
-      var jsonStr = String(dataOther[i][1] || '').trim();
-      if (jsonStr) {
-        try {
-          var parsed = JSON.parse(jsonStr);
-          if (type === "modified") modified = parsed;
-          if (type === "closedIds") closedIds = parsed;
-          if (type === "groups") groups = parsed;
-        } catch(err) {}
-      }
-    }
-  }
-  
-  var result = {
-    pos: pos,
-    modified: modified,
-    closedIds: closedIds,
-    groups: groups || []
-  };
-  
-  return ContentService.createTextOutput(JSON.stringify(result))
-    .setMimeType(ContentService.MimeType.JSON);
-}
 
-function doPost(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var payload = JSON.parse(e.postData.contents);
-  
-  // 1. Lưu dữ liệu Bưu cục vào sheet "BuuCucTuyChinh"
-  var sheetPO = ss.getSheetByName("BuuCucTuyChinh");
-  if (!sheetPO) {
-    sheetPO = ss.insertSheet("BuuCucTuyChinh");
-  }
-  sheetPO.clear();
-  sheetPO.appendRow(["Mã BC", "Tên Bưu Cục", "Vĩ độ (Lat)", "Kinh độ (Lng)", "Quản lý", "Số điện thoại", "Địa chỉ", "Tọa độ nhãn Lat", "Tọa độ nhãn Lng", "Xã cover"]);
-  
-  var pos = payload.pos || [];
-  for (var i = 0; i < pos.length; i++) {
-    var po = pos[i];
-    var labelLat = (po.labelLatLng && po.labelLatLng.lat) ? po.labelLatLng.lat : "";
-    var labelLng = (po.labelLatLng && po.labelLatLng.lng) ? po.labelLatLng.lng : "";
-    var communeIdsText = "";
-    if (po.communeIds && Array.isArray(po.communeIds)) {
-      communeIdsText = po.communeIds.join('; ');
-    }
-    sheetPO.appendRow([
-      po.id,
-      po.name,
-      po.lat,
-      po.lng,
-      po.manager || "",
-      po.phone || "",
-      po.address || "",
-      labelLat,
-      labelLng,
-      communeIdsText
-    ]);
-  }
-  
-  // 2. Lưu trạng thái khác vào sheet "TrangThaiKhac"
-  var sheetOther = ss.getSheetByName("TrangThaiKhac");
-  if (!sheetOther) {
-    sheetOther = ss.insertSheet("TrangThaiKhac");
-  }
-  sheetOther.clear();
-  sheetOther.appendRow(["Loại", "Dữ liệu JSON", "Cập nhật lúc"]);
-  sheetOther.appendRow(["modified", JSON.stringify(payload.modified || []), new Date().toISOString()]);
-  sheetOther.appendRow(["closedIds", JSON.stringify(payload.closedIds || []), new Date().toISOString()]);
-  sheetOther.appendRow(["groups", JSON.stringify(payload.groups || []), new Date().toISOString()]);
-  
-  return ContentService.createTextOutput(JSON.stringify({ success: true }))
-    .setMimeType(ContentService.MimeType.JSON);
-}`;
-
-    if (appsScriptCodeTextarea) {
-        appsScriptCodeTextarea.value = appsScriptCode;
-    }
-
-    if (openSyncGuideBtn && cloudSyncGuideModal) {
-        openSyncGuideBtn.addEventListener('click', () => {
-            cloudSyncGuideModal.style.display = 'flex';
-        });
-    }
-
-    const closeGuide = () => {
-        if (cloudSyncGuideModal) cloudSyncGuideModal.style.display = 'none';
-    };
-
-    if (closeSyncGuideModalBtn) closeSyncGuideModalBtn.addEventListener('click', closeGuide);
-    if (closeSyncGuideModalBtn2) closeSyncGuideModalBtn2.addEventListener('click', closeGuide);
-
-    if (copyAppsScriptBtn && appsScriptCodeTextarea) {
-        copyAppsScriptBtn.addEventListener('click', () => {
-            appsScriptCodeTextarea.select();
-            appsScriptCodeTextarea.setSelectionRange(0, 99999);
-            try {
-                navigator.clipboard.writeText(appsScriptCodeTextarea.value);
-                showToast('Đã copy mã Apps Script vào bộ nhớ tạm!', 'success');
-            } catch (err) {
-                document.execCommand('copy');
-                showToast('Đã copy mã Apps Script!', 'success');
-            }
-        });
-    }
 
     // 1. Tải dữ liệu tùy chỉnh trước
     await loadFromLocalStorage();
@@ -4539,6 +5234,18 @@ function doPost(e) {
             leftMenuContent.classList.toggle('collapsed');
             if (toggleIcon) toggleIcon.classList.toggle('rotated');
         });
+    }
+
+    // Ngăn chặn sự kiện cuộn chuột (scroll/wheel) và click từ các bảng điều khiển nổi lan xuống bản đồ Leaflet
+    const leftSidebar = document.querySelector('.floating-top-left');
+    if (leftSidebar) {
+        L.DomEvent.disableClickPropagation(leftSidebar);
+        L.DomEvent.disableScrollPropagation(leftSidebar);
+    }
+    const rightInfoPanel = document.querySelector('.floating-info-panel');
+    if (rightInfoPanel) {
+        L.DomEvent.disableClickPropagation(rightInfoPanel);
+        L.DomEvent.disableScrollPropagation(rightInfoPanel);
     }
 
     // Xử lý chuyển Tab
@@ -4679,6 +5386,136 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // ====== BATCH IMPORT NHÓM XÃ ======
+    const batchImportGroupBtn = document.getElementById('batchImportGroupBtn');
+    const batchImportGroupModal = document.getElementById('batchImportGroupModal');
+    const closeBatchGroupModalBtn = document.getElementById('closeBatchGroupModalBtn');
+    const cancelBatchGroupBtn = document.getElementById('cancelBatchGroupBtn');
+    const confirmBatchGroupBtn = document.getElementById('confirmBatchGroupBtn');
+    const batchImportGroupTextarea = document.getElementById('batchImportGroupTextarea');
+
+    if (batchImportGroupBtn && batchImportGroupModal) {
+        batchImportGroupBtn.addEventListener('click', () => {
+            batchImportGroupModal.style.display = 'flex';
+            batchImportGroupTextarea.value = '';
+            batchImportGroupTextarea.focus();
+        });
+    }
+
+    function closeBatchGroupModal() {
+        if (batchImportGroupModal) batchImportGroupModal.style.display = 'none';
+    }
+
+    if(closeBatchGroupModalBtn) closeBatchGroupModalBtn.addEventListener('click', closeBatchGroupModal);
+    if(cancelBatchGroupBtn) cancelBatchGroupBtn.addEventListener('click', closeBatchGroupModal);
+
+    if (confirmBatchGroupBtn) {
+        confirmBatchGroupBtn.addEventListener('click', () => {
+            const rawData = batchImportGroupTextarea.value.trim();
+            if (!rawData) {
+                showToast('Vui lòng dán dữ liệu trước khi xác nhận!', 'error');
+                return;
+            }
+
+            // Xây dựng map tra cứu nhanh xã/phường dựa trên dữ liệu bản đồ đang có
+            const lookupMap = new Map();
+            if (typeof provincialLayers !== 'undefined') {
+                Object.values(provincialLayers).forEach(provinceLayer => {
+                    provinceLayer.eachLayer(layer => {
+                        if (layer.feature && layer.feature.properties) {
+                            const maXa = layer.feature.properties.ma_xa;
+                            const tenXa = layer.feature.properties.ten_xa;
+                            if (maXa) {
+                                lookupMap.set(maXa.toString().trim(), { id: maXa, name: tenXa });
+                            }
+                            if (tenXa) {
+                                if (typeof normalizeCommuneToken === 'function') {
+                                    lookupMap.set(normalizeCommuneToken(tenXa), { id: maXa, name: tenXa });
+                                } else {
+                                    lookupMap.set(tenXa.toLowerCase().trim(), { id: maXa, name: tenXa });
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+            const rows = rawData.split('\n'); // will split correctly in javascript execution context
+            let successCount = 0;
+            let errorCount = 0;
+            const currentDS = document.getElementById('dataSourceSelect') ? document.getElementById('dataSourceSelect').value : 'legacy';
+
+            rows.forEach((row) => {
+                if (!row.trim()) return; // Bỏ qua dòng trống
+                
+                const cols = row.split('\t');
+                if (cols.length < 2) {
+                    errorCount++;
+                    return;
+                }
+
+                const groupName = cols[0] ? cols[0].trim() : 'Nhóm xã mới';
+                const communesRaw = cols[1] ? cols[1].trim() : '';
+                const color = cols[2] ? cols[2].trim() : '#ef4444'; // Mặc định đỏ
+
+                if (!communesRaw) {
+                    errorCount++;
+                    return;
+                }
+
+                // Tách các xã
+                const tokens = communesRaw.split(/[;,|\t]+/).map(item => item.trim()).filter(Boolean);
+                const communes = [];
+
+                tokens.forEach(tok => {
+                    // Tra cứu mã xã hoặc tên xã
+                    let matched = lookupMap.get(tok);
+                    if (!matched) {
+                        const norm = typeof normalizeCommuneToken === 'function' ? normalizeCommuneToken(tok) : tok.toLowerCase();
+                        matched = lookupMap.get(norm);
+                    }
+
+                    if (matched) {
+                        if (!communes.some(c => c.id === matched.id)) {
+                            communes.push({ id: matched.id, name: matched.name });
+                        }
+                    }
+                });
+
+                if (communes.length === 0) {
+                    errorCount++;
+                    return;
+                }
+
+                const newGroup = {
+                    id: 'g_' + new Date().getTime() + '_' + Math.floor(Math.random() * 1000),
+                    name: groupName,
+                    color: color,
+                    communes: communes,
+                    dataSource: currentDS
+                };
+
+                window.mapAreaGroups.push(newGroup);
+                successCount++;
+            });
+
+            if (successCount > 0) {
+                if (typeof saveAreaGroups === 'function') {
+                    saveAreaGroups();
+                } else {
+                    localStorage.setItem('mapAreaGroups', JSON.stringify(window.mapAreaGroups));
+                    if (typeof renderGroupsList === 'function') renderGroupsList();
+                }
+                showToast(`Đã thêm thành công ${successCount} nhóm xã!`, 'success');
+                closeBatchGroupModal();
+            }
+            
+            if (errorCount > 0) {
+                showToast(`Có ${errorCount} dòng bị lỗi hoặc không khớp được xã/phường nào.`, 'error');
+            }
+        });
+    }
 });
     </script>
 
@@ -4705,58 +5542,26 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 </div>
 
-<!-- Modal Cloud Sync Guide -->
-<div id="cloudSyncGuideModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-    <div style="background: var(--bg-panel); width: 680px; max-width: 95%; max-height: 85vh; border-radius: 12px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: var(--text-main); display: flex; flex-direction: column; overflow: hidden;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; flex-shrink: 0;">
-            <h3 style="margin: 0; color: #fb923c;"><i class="fa-solid fa-book-open"></i> Hướng Dẫn Thiết Lập Cloud Database Google Sheets</h3>
-            <button id="closeSyncGuideModalBtn" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+<!-- Modal Import Nhóm Xã Hàng Loạt -->
+<div id="batchImportGroupModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: var(--bg-panel); width: 600px; max-width: 90%; border-radius: 12px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: var(--text-main);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+            <h3 style="margin: 0; color: #10b981;"><i class="fa-solid fa-file-excel"></i> Thêm Nhóm Xã Hàng Loạt</h3>
+            <button id="closeBatchGroupModalBtn" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
         </div>
         
-        <div style="overflow-y: auto; padding-right: 8px; font-size: 0.9rem; line-height: 1.6; flex-grow: 1;">
-            <p style="margin: 0 0 12px 0;">Để chia sẻ dữ liệu bưu cục thời gian thực với đồng nghiệp, bạn hãy hoàn thành 3 bước đơn giản sau:</p>
-            
-            <h4 style="color: #fb923c; margin: 15px 0 8px 0;"><i class="fa-solid fa-1"></i> Bước 1: Tạo Google Sheet mới</h4>
-            <ul style="margin: 0 0 10px 0; padding-left: 20px;">
-                <li>Truy cập <a href="https://sheets.google.com" target="_blank" style="color: #3b82f6; text-decoration: underline;">Google Sheets</a> và tạo một bảng tính mới trống.</li>
-                <li>Bạn có thể đặt tên file tùy ý (ví dụ: <code>Dữ liệu Bản đồ GHN</code>). **Hãy để nguyên file trống**, hệ thống sẽ tự động tạo các cột sau khi đồng bộ lần đầu.</li>
-            </ul>
-            
-            <h4 style="color: #fb923c; margin: 15px 0 8px 0;"><i class="fa-solid fa-2"></i> Bước 2: Dán mã code Apps Script</h4>
-            <ul style="margin: 0 0 10px 0; padding-left: 20px;">
-                <li>Trong file Google Sheet vừa tạo, chọn menu **Tiện ích mở rộng** (Extensions) -> **Apps Script**.</li>
-                <li>Xóa toàn bộ mã code mặc định hiển thị trong trình soạn thảo.</li>
-                <li>Bấm nút **Copy Code** bên dưới, rồi dán toàn bộ đoạn mã vào trình soạn thảo Apps Script:</li>
-            </ul>
-            <p style="margin: 0 0 15px 0; color: #fbbf24; font-size: 0.9rem;"><strong>Lưu ý:</strong> Phiên bản Apps Script hiện tại đã hỗ trợ thêm cột <code>Xã cover</code> trong sheet <code>BuuCucTuyChinh</code>. Bạn có thể nhập nhiều mã/xã cách nhau bằng dấu chấm phẩy.</p>
-            <div style="position: relative; margin-bottom: 15px;">
-                <textarea id="appsScriptCodeTextarea" readonly style="width: 100%; height: 180px; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(15,23,42,0.5); color: #e2e8f0; font-family: monospace; font-size: 0.8rem; resize: none; box-sizing: border-box;"></textarea>
-                <button id="copyAppsScriptBtn" class="action-btn" style="position: absolute; right: 10px; top: 10px; width: auto; padding: 5px 12px; font-size: 0.75rem; background: #fb923c; border-color: #f97316; color: white;"><i class="fa-solid fa-copy"></i> Copy Code</button>
-            </div>
-            
-            <h4 style="color: #fb923c; margin: 15px 0 8px 0;"><i class="fa-solid fa-3"></i> Bước 3: Triển khai Web App</h4>
-            <ul style="margin: 0 0 10px 0; padding-left: 20px;">
-                <li>Bấm nút **Lưu** (hình đĩa mềm) hoặc nhấn <code>Ctrl + S</code>.</li>
-                <li>Bấm nút **Triển khai** (Deploy) ở góc trên bên phải -> chọn **Triển khai mới** (New deployment).</li>
-                <li>Bấm chọn biểu tượng bánh răng, chọn **Ứng dụng web** (Web app).</li>
-                <li>Cấu hình chính xác như sau (RẤT QUAN TRỌNG):
-                    <ol style="padding-left: 18px; margin-top: 5px;">
-                        <li>**Thực thi dưới dạng (Execute as):** Chọn **Tôi (Email của bạn)**.</li>
-                        <li>**Ai có quyền truy cập (Who has access):** Chọn **Bất kỳ ai (Anyone)**. (Điều này giúp đồng nghiệp của bạn có thể ghi nhận bưu cục mà không gặp lỗi phân quyền).</li>
-                    </ol>
-                </li>
-                <li>Bấm **Triển khai**. Google sẽ yêu cầu bạn cấp quyền truy cập bảng tính (Authorize Access) -> Chọn Email của bạn -> Chọn **Nâng cao (Advanced)** -> Chọn **Đi tới dự án (không an toàn)** -> Bấm **Cho phép (Allow)**.</li>
-                <li>Copy đường dẫn **URL ứng dụng web** hiển thị ở màn hình hoàn tất (có dạng <code>https://script.google.com/macros/s/.../exec</code>).</li>
-            </ul>
-            
-            <p style="margin: 15px 0 0 0; color: #10b981; font-weight: bold;"><i class="fa-solid fa-circle-check"></i> XONG! Dán link đó vào ô nhập link ở Tab "Đồng bộ" trên Bản đồ, bấm Lưu và trải nghiệm!</p>
-        </div>
-        
-        <div style="display: flex; justify-content: flex-end; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px; flex-shrink: 0;">
-            <button id="closeSyncGuideModalBtn2" class="action-btn" style="background: rgba(255,255,255,0.1); width: auto; padding: 8px 20px;">Đóng Hướng Dẫn</button>
+
+
+        <textarea id="batchImportGroupTextarea" placeholder="Dán dữ liệu Excel vào đây (hỗ trợ copy dán nhiều hàng)..." style="width: 100%; height: 200px; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(15,23,42,0.5); color: white; font-family: monospace; resize: vertical; margin-bottom: 15px; box-sizing: border-box;"></textarea>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button id="cancelBatchGroupBtn" class="action-btn" style="background: rgba(255,255,255,0.1); width: auto; padding: 8px 16px;">Hủy</button>
+            <button id="confirmBatchGroupBtn" class="action-btn" style="background: #10b981; border-color: #059669; color: white; width: auto; padding: 8px 16px;"><i class="fa-solid fa-check"></i> Xác nhận Nhập</button>
         </div>
     </div>
 </div>
+
+
 
 
 <!-- LOGIC UNDO REDO -->
@@ -4774,6 +5579,7 @@ function pushUndoState() {
         id: po.id, name: po.name, lat: po.lat, lng: po.lng, manager: po.manager, phone: po.phone, address: po.address, labelLatLng: po.labelLatLng
     }));
     const closedArr = (typeof window !== 'undefined' && window.closedPoIds) ? Array.from(window.closedPoIds) : [];
+    const visibleNamePoIdsArr = (typeof window !== 'undefined' && window.visibleNamePoIds) ? Array.from(window.visibleNamePoIds) : [];
     
     const selectedWardsArr = (typeof selectedFeatures !== 'undefined' && selectedFeatures.size > 0) 
         ? Array.from(selectedFeatures).map(layer => layer.feature.properties.ma_xa || layer.feature.properties.ten_xa) 
@@ -4783,6 +5589,7 @@ function pushUndoState() {
         pos: customPOs,
         modified: modifiedPOs,
         closedIds: closedArr,
+        visibleNamePoIds: visibleNamePoIdsArr,
         selectedWards: selectedWardsArr
     });
     
@@ -4835,6 +5642,7 @@ async function applyMapState(deltaData) {
     } else {
         postOffices = deltaData.pos || [];
         window.closedPoIds = new Set(deltaData.closedIds || []);
+        window.visibleNamePoIds = new Set(deltaData.visibleNamePoIds || []);
     }
     
     // Cập nhật lên bản đồ
@@ -4912,9 +5720,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('DOMContentLoaded', () => {
         if (typeof map !== 'undefined') {
             window.groupBoundaryLayer = L.layerGroup().addTo(map);
+            window.groupLabelLayer = L.layerGroup().addTo(map); // Layer riêng cho nhãn nhóm xã
             window.poBoundaryLayer = L.layerGroup().addTo(map);
         }
-        setTimeout(() => { renderGroupsList(); }, 1000); 
+        setTimeout(() => { 
+            renderGroupsList(); 
+            initGroupFilterEvents();
+        }, 1000); 
     });
 
     function saveAreaGroups() {
@@ -4928,6 +5740,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const name = prompt("Nhập tên cho nhóm xã này:", "Khu vực mới");
         if (!name) return;
+
+        const parentName = prompt("Nhập tên nhóm lớn (nhóm cha) cho nhóm này (để trống nếu không phân nhóm):");
+        const parentGroup = parentName ? parentName.trim() : undefined;
 
         // Lưu danh sách mã xã
         const communes = Array.from(selectedFeatures).map(layer => {
@@ -4946,6 +5761,7 @@ document.addEventListener('DOMContentLoaded', () => {
             name: name,
             color: '#ef4444', // Red default
             communes: communes,
+            parentGroup: parentGroup,
             dataSource: document.getElementById('dataSourceSelect') ? document.getElementById('dataSourceSelect').value : 'legacy'
         };
 
@@ -4956,6 +5772,96 @@ document.addEventListener('DOMContentLoaded', () => {
         // Chuyển sang tab nhóm luôn cho người dùng xem
         const tabGroupsBtn = document.querySelector('.tab-btn[data-tab="tab-groups"]');
         if (tabGroupsBtn) tabGroupsBtn.click();
+    }
+
+    // Initialize group filter and collapse events
+    function initGroupFilterEvents() {
+        const filterInput = document.getElementById('groupFilterInput');
+        const collapseAllBtn = document.getElementById('groupCollapseAllBtn');
+        const listContainer = document.getElementById('groupsQuickList');
+        
+        if (filterInput) {
+            filterInput.addEventListener('input', function() {
+                const query = (this.value || '').trim().toLowerCase();
+                const normQuery = typeof removeVietnameseTones === 'function' ? removeVietnameseTones(query) : query;
+                
+                listContainer.querySelectorAll('.po-district-group').forEach(group => {
+                    const pName = group.getAttribute('data-parent-name');
+                    const normPName = typeof removeVietnameseTones === 'function' ? removeVietnameseTones(pName.toLowerCase()) : pName.toLowerCase();
+                    const header = group.querySelector('.po-district-header');
+                    const content = group.querySelector('.po-district-content');
+                    
+                    const items = group.querySelectorAll('.po-list-item');
+                    let visibleCount = 0;
+                    
+                    items.forEach(item => {
+                        const titleEl = item.querySelector('.po-list-title');
+                        const titleText = titleEl ? titleEl.textContent.toLowerCase() : '';
+                        const normTitle = typeof removeVietnameseTones === 'function' ? removeVietnameseTones(titleText) : titleText;
+                        
+                        const isMatch = titleText.includes(query) || normTitle.includes(normQuery) || pName.toLowerCase().includes(query) || normPName.includes(normQuery);
+                        if (isMatch) {
+                            item.style.display = 'flex';
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    
+                    if (query === '') {
+                        group.style.display = '';
+                        items.forEach(item => item.style.display = 'flex');
+                        const badge = group.querySelector('.district-badge');
+                        const currentDS = document.getElementById('dataSourceSelect') ? document.getElementById('dataSourceSelect').value : 'legacy';
+                        const totalCount = window.mapAreaGroups.filter(g => (!g.dataSource || g.dataSource === currentDS) && (g.parentGroup ? g.parentGroup.trim() : 'Nhóm tự do / Khác') === pName).length;
+                        if (badge) badge.textContent = totalCount;
+                    } else {
+                        if (visibleCount === 0) {
+                            group.style.display = 'none';
+                        } else {
+                            group.style.display = '';
+                            const badge = group.querySelector('.district-badge');
+                            if (badge) badge.textContent = `${visibleCount}/${items.length}`;
+                            
+                            // Automatically expand if matching
+                            content.classList.remove('collapsed');
+                            header.classList.remove('collapsed');
+                            window.collapsedParentGroupsState[pName] = false;
+                        }
+                    }
+                });
+            });
+        }
+        
+        if (collapseAllBtn) {
+            collapseAllBtn.addEventListener('click', function() {
+                const allHeaders = listContainer.querySelectorAll('.po-district-header');
+                const anyExpanded = Array.from(allHeaders).some(h => !h.classList.contains('collapsed'));
+                
+                allHeaders.forEach(header => {
+                    const pName = header.getAttribute('data-parent-name');
+                    const content = header.nextElementSibling;
+                    if (anyExpanded) {
+                        content.classList.add('collapsed');
+                        header.classList.add('collapsed');
+                        window.collapsedParentGroupsState[pName] = true;
+                    } else {
+                        content.classList.remove('collapsed');
+                        header.classList.remove('collapsed');
+                        window.collapsedParentGroupsState[pName] = false;
+                    }
+                });
+                
+                const icon = collapseAllBtn.querySelector('i');
+                if (anyExpanded) {
+                    icon.className = 'fa-solid fa-expand';
+                    collapseAllBtn.innerHTML = '<i class="fa-solid fa-expand"></i> Mở rộng';
+                } else {
+                    icon.className = 'fa-solid fa-compress';
+                    collapseAllBtn.innerHTML = '<i class="fa-solid fa-compress"></i> Thu gọn';
+                }
+            });
+        }
     }
 
     function renderGroupsList() {
@@ -4970,64 +5876,249 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        list.innerHTML = visibleGroups.map(g => {
-            const isSelected = window.selectedGroups.has(g.id);
-            return `
-                <div class="po-list-item ${isSelected ? 'active' : ''}" style="display: flex; justify-content: space-between; align-items: center; padding-right: 8px;" onclick="clickGroup(event, '${g.id}')">
-                    <div style="flex: 1;">
-                        <div class="po-list-title" style="color: ${g.color || '#fff'}; font-size: 0.95rem; font-weight: 700; margin-bottom: 2px;"><i class="fa-solid fa-object-group"></i> ${g.name}</div>
-                        <div class="po-list-subtitle" style="font-size: 0.75rem;"><i class="fa-solid fa-layer-group"></i> ${g.communes.length} xã/phường được chọn</div>
-                    </div>
-                    <div style="display: flex; gap: 6px; align-items: center;" onclick="event.stopPropagation()">
-                        <div style="width: 24px; height: 24px; border-radius: 50%; overflow: hidden; border: 2px solid var(--border-color); flex-shrink: 0;">
-                            <input type="color" value="${g.color}" style="width: 40px; height: 40px; margin: -8px; cursor: pointer; background: transparent; border: none;" onchange="updateGroupColor('${g.id}', this.value)" title="Đổi màu">
+        if (!window.collapsedParentGroupsState) {
+            window.collapsedParentGroupsState = {};
+        }
+
+        // Gom nhóm theo Nhóm cha
+        const groups = {};
+        visibleGroups.forEach(g => {
+            const pGroup = g.parentGroup ? g.parentGroup.trim() : 'Nhóm tự do / Khác';
+            if (!groups[pGroup]) groups[pGroup] = [];
+            groups[pGroup].push(g);
+        });
+
+        // Sắp xếp nhóm cha
+        const sortedParentGroups = Object.keys(groups).sort((a, b) => {
+            if (a.includes('Khác') || a.includes('tự do')) return 1;
+            if (b.includes('Khác') || b.includes('tự do')) return -1;
+            return a.localeCompare(b, 'vi');
+        });
+
+        let groupsHtml = '';
+        sortedParentGroups.forEach(parentName => {
+            const childGroups = groups[parentName];
+            
+            const hasActiveChild = childGroups.some(cg => window.selectedGroups.has(cg.id));
+            if (hasActiveChild && window.collapsedParentGroupsState[parentName] === undefined) {
+                window.collapsedParentGroupsState[parentName] = false;
+            }
+            
+            const isCollapsed = window.collapsedParentGroupsState[parentName] === true;
+            const collapseClass = isCollapsed ? 'collapsed' : '';
+            
+            const allSelected = childGroups.every(cg => window.selectedGroups.has(cg.id));
+
+            const itemsHtml = childGroups.map(g => {
+                const isSelected = window.selectedGroups.has(g.id);
+                return `
+                    <div class="po-list-item ${isSelected ? 'active' : ''}" style="display: flex; align-items: center; padding-right: 8px; gap: 8px;" data-group-id="${g.id}">
+                        <label style="display:flex;align-items:center;flex:1;min-width:0;cursor:pointer;gap:8px;margin:0;">
+                            <input type="checkbox" class="group-select-checkbox" data-group-id="${g.id}" ${isSelected ? 'checked' : ''} style="flex-shrink:0;width:15px;height:15px;cursor:pointer;" />
+                            <div style="flex:1;min-width:0;" onclick="clickGroup(event, '${g.id}')">
+                                <div class="po-list-title" style="color: ${g.color || '#fff'}; font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="fa-solid fa-object-group"></i> ${g.name}</div>
+                                <div class="po-list-subtitle" style="font-size: 0.75rem;"><i class="fa-solid fa-layer-group"></i> ${g.communes.length} xã/phường được chọn</div>
+                            </div>
+                        </label>
+                        <div style="display: flex; gap: 4px; align-items: center; flex-shrink:0;" onclick="event.stopPropagation()">
+                            <div style="width: 20px; height: 20px; border-radius: 50%; overflow: hidden; border: 2px solid var(--border-color); flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                <input type="color" value="${g.color || '#ef4444'}" style="width: 30px; height: 30px; margin: -5px; cursor: pointer; background: transparent; border: none;" onchange="updateGroupColor('${g.id}', this.value)" title="Đổi màu">
+                            </div>
+                            <button class="action-btn" onclick="editGroup('${g.id}')" style="width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.4); color: #60a5fa;" title="Chỉnh sửa nhóm"><i class="fa-solid fa-pen" style="font-size: 0.65rem;"></i></button>
+                            <button class="action-btn" onclick="deleteGroup('${g.id}')" style="width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #f87171;" title="Xóa nhóm"><i class="fa-solid fa-trash" style="font-size: 0.65rem;"></i></button>
                         </div>
-                        <button class="action-btn" onclick="editGroupName('${g.id}')" style="width: 26px; height: 26px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.4); color: #60a5fa;" title="Đổi tên"><i class="fa-solid fa-pen" style="font-size: 0.7rem;"></i></button>
-                        <button class="action-btn" onclick="deleteGroup('${g.id}')" style="width: 26px; height: 26px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #f87171;" title="Xóa nhóm"><i class="fa-solid fa-trash" style="font-size: 0.7rem;"></i></button>
+                    </div>
+                `;
+            }).join('');
+
+            groupsHtml += `
+                <div class="po-district-group ${hasActiveChild ? 'has-active' : ''}" data-parent-name="${parentName}">
+                    <div class="po-district-header ${collapseClass}" data-parent-name="${parentName}">
+                        <i class="fa-solid fa-chevron-down toggle-arrow"></i>
+                        <input type="checkbox" class="parent-group-select-checkbox" data-parent-name="${parentName}" ${allSelected ? 'checked' : ''} style="flex-shrink:0;width:15px;height:15px;cursor:pointer;margin: 0 8px 0 0;" onclick="event.stopPropagation();" />
+                        <span class="district-title" style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.95rem; font-weight:700;">${parentName}</span>
+                        <span class="district-badge">${childGroups.length}</span>
+                    </div>
+                    <div class="po-district-content ${collapseClass}">
+                        ${itemsHtml}
                     </div>
                 </div>
             `;
-        }).join('');
+        });
+
+        list.innerHTML = groupsHtml;
+
+        // Thiết lập trạng thái indeterminate cho checkbox nhóm cha
+        list.querySelectorAll('.parent-group-select-checkbox').forEach(cb => {
+            const parentName = cb.getAttribute('data-parent-name');
+            const childGroups = groups[parentName] || [];
+            const allSelected = childGroups.every(cg => window.selectedGroups.has(cg.id));
+            const someSelected = childGroups.some(cg => window.selectedGroups.has(cg.id));
+            if (someSelected && !allSelected) {
+                cb.indeterminate = true;
+            }
+        });
+
+        // Gắn sự kiện cho checkbox nhóm cha
+        list.querySelectorAll('.parent-group-select-checkbox').forEach(cb => {
+            cb.addEventListener('change', function(e) {
+                const pName = this.getAttribute('data-parent-name');
+                const childGroups = groups[pName] || [];
+                
+                childGroups.forEach(g => {
+                    if (this.checked) {
+                        window.selectedGroups.add(g.id);
+                    } else {
+                        window.selectedGroups.delete(g.id);
+                    }
+                    
+                    if (typeof selectedFeatures !== 'undefined') {
+                        Object.values(provincialLayers).forEach(pl => {
+                            pl.eachLayer(layer => {
+                                if (g.communes.some(c => c.id === layer.feature.properties.ma_xa)) {
+                                    if (this.checked) {
+                                        selectedFeatures.add(layer);
+                                        if (typeof applySelectedStyle === 'function') applySelectedStyle(layer);
+                                    } else {
+                                        const otherGroupsCommuneIds = new Set();
+                                        window.selectedGroups.forEach(otherGId => {
+                                            const otherGrp = window.mapAreaGroups.find(x => x.id === otherGId);
+                                            if (otherGrp) {
+                                                otherGrp.communes.forEach(c => otherGroupsCommuneIds.add(c.id));
+                                            }
+                                        });
+                                        const maXa = layer.feature.properties.ma_xa;
+                                        if (!otherGroupsCommuneIds.has(maXa)) {
+                                            selectedFeatures.delete(layer);
+                                            if (layer.parentProvinceLayer) {
+                                                layer.parentProvinceLayer.resetStyle(layer);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    }
+                });
+
+                if (typeof updateSidebar === 'function') updateSidebar(selectedFeatures);
+                renderGroupsList();
+                drawSelectedGroups();
+            });
+        });
+
+        // Gắn sự kiện chọn từng nhóm con (checkbox)
+        list.querySelectorAll('.group-select-checkbox').forEach(cb => {
+            cb.addEventListener('change', function(e) {
+                const gId = this.getAttribute('data-group-id');
+                if (this.checked) {
+                    window.selectedGroups.add(gId);
+                } else {
+                    window.selectedGroups.delete(gId);
+                }
+                
+                const grp = window.mapAreaGroups.find(x => x.id === gId);
+                if (grp && typeof selectedFeatures !== 'undefined') {
+                    if (this.checked) {
+                        Object.values(provincialLayers).forEach(pl => {
+                            pl.eachLayer(layer => {
+                                if (grp.communes.some(c => c.id === layer.feature.properties.ma_xa)) {
+                                    selectedFeatures.add(layer);
+                                    if (typeof applySelectedStyle === 'function') applySelectedStyle(layer);
+                                }
+                            });
+                        });
+                    } else {
+                        const otherGroupsCommuneIds = new Set();
+                        window.selectedGroups.forEach(otherGId => {
+                            const otherGrp = window.mapAreaGroups.find(x => x.id === otherGId);
+                            if (otherGrp) {
+                                otherGrp.communes.forEach(c => otherGroupsCommuneIds.add(c.id));
+                            }
+                        });
+
+                        selectedFeatures.forEach(layer => {
+                            const maXa = layer.feature.properties.ma_xa;
+                            if (grp.communes.some(c => c.id === maXa) && !otherGroupsCommuneIds.has(maXa)) {
+                                selectedFeatures.delete(layer);
+                                if (layer.parentProvinceLayer) {
+                                    layer.parentProvinceLayer.resetStyle(layer);
+                                }
+                            }
+                        });
+                    }
+                    if (typeof updateSidebar === 'function') updateSidebar(selectedFeatures);
+                }
+                renderGroupsList();
+                drawSelectedGroups();
+            });
+        });
+
+        // Gắn sự kiện toggle thu gọn/mở rộng cho nhóm cha
+        list.querySelectorAll('.po-district-header').forEach(header => {
+            header.addEventListener('click', function(e) {
+                if (e.target.closest('.parent-group-select-checkbox')) {
+                    return;
+                }
+                const pName = this.getAttribute('data-parent-name');
+                const content = this.nextElementSibling;
+                const isCollapsed = content.classList.contains('collapsed');
+                
+                if (isCollapsed) {
+                    content.classList.remove('collapsed');
+                    this.classList.remove('collapsed');
+                    window.collapsedParentGroupsState[pName] = false;
+                } else {
+                    content.classList.add('collapsed');
+                    this.classList.add('collapsed');
+                    window.collapsedParentGroupsState[pName] = true;
+                }
+            });
+        });
     }
 
     function clickGroup(e, groupId) {
+        // Click vào tên nhóm: toggle chọn nhóm (cũng hoạt động như checkbox)
         const isMultiSelect = e.ctrlKey || e.metaKey;
+
         if (!isMultiSelect) {
+            // Single-click: bỏ chọn các nhóm khác, chỉ chọn nhóm này
+            const wasSelected = window.selectedGroups.has(groupId);
             window.selectedGroups.clear();
-            
-            // Clear map selection
+
             if (typeof selectedFeatures !== 'undefined') {
                 selectedFeatures.forEach(l => {
                     if (l.parentProvinceLayer) l.parentProvinceLayer.resetStyle(l);
                 });
                 selectedFeatures.clear();
             }
-    // Thêm: Xóa selection của Nhóm khi click ra ngoài
-    if (typeof window.selectedGroups !== 'undefined' && window.selectedGroups.size > 0) {
-        window.selectedGroups.clear();
-        if (typeof drawSelectedGroups === 'function') drawSelectedGroups();
-        if (typeof renderGroupsList === 'function') renderGroupsList();
-    }
-        }
 
-        if (isMultiSelect && window.selectedGroups.has(groupId)) {
-            window.selectedGroups.delete(groupId);
-            // We should ideally unselect its features from the map, but it's complex if features overlap.
-            // For simplicity, we just clear and rebuild below if needed, or leave it.
+            if (!wasSelected) {
+                window.selectedGroups.add(groupId);
+            }
         } else {
-            window.selectedGroups.add(groupId);
+            // Multi-select: toggle nhóm này
+            if (window.selectedGroups.has(groupId)) {
+                window.selectedGroups.delete(groupId);
+            } else {
+                window.selectedGroups.add(groupId);
+            }
         }
 
-        // Sync with map selectedFeatures
-        const group = window.mapAreaGroups.find(x => x.id === groupId);
-        if (group && typeof selectedFeatures !== 'undefined') {
-            Object.values(provincialLayers).forEach(provinceLayer => {
-                provinceLayer.eachLayer(layer => {
-                    if (group.communes.some(c => c.id === layer.feature.properties.ma_xa)) {
-                        selectedFeatures.add(layer);
-                        if (typeof applySelectedStyle === 'function') applySelectedStyle(layer);
-                    }
-                });
+        // Sync với selectedFeatures trên bản đồ cho tất cả nhóm đang chọn
+        if (typeof selectedFeatures !== 'undefined') {
+            window.selectedGroups.forEach(gId => {
+                const grp = window.mapAreaGroups.find(x => x.id === gId);
+                if (grp) {
+                    Object.values(provincialLayers).forEach(provinceLayer => {
+                        provinceLayer.eachLayer(layer => {
+                            if (grp.communes.some(c => c.id === layer.feature.properties.ma_xa)) {
+                                selectedFeatures.add(layer);
+                                if (typeof applySelectedStyle === 'function') applySelectedStyle(layer);
+                            }
+                        });
+                    });
+                }
             });
             if (typeof updateSidebar === 'function') updateSidebar(selectedFeatures);
         }
@@ -5046,14 +6137,135 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function editGroupName(id) {
+        // Kept for backward compatibility — redirects to full edit
+        editGroup(id);
+    }
+
+    function editGroup(id) {
         const g = window.mapAreaGroups.find(x => x.id === id);
-        if (g) {
-            const newName = prompt("Nhập tên mới:", g.name);
-            if (newName && newName !== g.name) {
-                g.name = newName;
-                saveAreaGroups();
+        if (!g) return;
+
+        const communeListText = g.communes.map(c => c.id || c.name).join(', ');
+
+        const html = `
+            <div id="infoHeader" class="info-header" style="cursor: default;">
+                <h2 class="info-title" style="color: #3b82f6;"><i class="fa-solid fa-pen-to-square"></i> Sửa nhóm xã</h2>
+                <div style="display: flex; gap: 8px;">
+                    <button id="cancelEditGroupBtn" class="close-info-btn" title="Hủy"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div id="infoBody" class="info-body">
+                <form id="editGroupForm" class="edit-po-form">
+                    <div class="edit-field">
+                        <label><i class="fa-solid fa-object-group"></i> Tên nhóm xã</label>
+                        <input type="text" id="editGroupName" required>
+                    </div>
+                    <div class="edit-field">
+                        <label><i class="fa-solid fa-folder"></i> Nhóm lớn (Nhóm cha)</label>
+                        <input type="text" id="editGroupParent" placeholder="Nhập tên nhóm cha (lớn) hoặc để trống">
+                    </div>
+                    <div class="edit-field">
+                        <label><i class="fa-solid fa-palette"></i> Màu sắc</label>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="color" id="editGroupColor" style="width:40px; height:32px; padding:2px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer; background:transparent;">
+                            <span id="editGroupColorHex" style="font-size:0.85rem; color:var(--text-secondary); font-family:monospace;"></span>
+                        </div>
+                    </div>
+                    <div class="edit-field">
+                        <label><i class="fa-solid fa-layer-group"></i> Danh sách xã cover</label>
+                        <textarea id="editGroupCommunes" rows="5" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:rgba(15,23,42,0.5); color:white; font-family:monospace; font-size:0.8rem; resize:vertical; box-sizing:border-box;" placeholder="Mã xã hoặc tên xã, ngăn cách bằng dấu phẩy..."></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button type="submit" class="btn-save-edit"><i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi</button>
+                        <button type="button" id="cancelEditGroupBtn2" class="btn-cancel-edit"><i class="fa-solid fa-rotate-left"></i> Hủy</button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        const infoPanelEl = document.getElementById('infoPanel');
+        if (!infoPanelEl) return;
+        infoPanelEl.innerHTML = html;
+        infoPanelEl.classList.remove('hidden');
+
+        // Điền giá trị hiện tại
+        document.getElementById('editGroupName').value = g.name || '';
+        document.getElementById('editGroupParent').value = g.parentGroup || '';
+        document.getElementById('editGroupColor').value = g.color || '#ef4444';
+        document.getElementById('editGroupColorHex').textContent = g.color || '#ef4444';
+        document.getElementById('editGroupCommunes').value = communeListText;
+
+        // Live color hex update
+        document.getElementById('editGroupColor').addEventListener('input', function() {
+            document.getElementById('editGroupColorHex').textContent = this.value;
+        });
+
+        // Nút hủy
+        const cancelFn = () => { infoPanelEl.classList.add('hidden'); };
+        document.getElementById('cancelEditGroupBtn').addEventListener('click', cancelFn);
+        document.getElementById('cancelEditGroupBtn2').addEventListener('click', cancelFn);
+
+        // Lưu form
+        document.getElementById('editGroupForm').addEventListener('submit', function(ev) {
+            ev.preventDefault();
+            const newName = document.getElementById('editGroupName').value.trim();
+            const newParent = document.getElementById('editGroupParent').value.trim();
+            const newColor = document.getElementById('editGroupColor').value;
+            const rawCommunes = document.getElementById('editGroupCommunes').value.trim();
+
+            if (!newName) return showToast('Vui lòng nhập tên nhóm!', 'warning');
+
+            // Xây dựng lookup map từ các layers đang có
+            const lookupMap = new Map();
+            if (typeof provincialLayers !== 'undefined') {
+                Object.values(provincialLayers).forEach(pl => {
+                    pl.eachLayer(layer => {
+                        if (layer.feature && layer.feature.properties) {
+                            const maXa = layer.feature.properties.ma_xa;
+                            const tenXa = layer.feature.properties.ten_xa;
+                            if (maXa) lookupMap.set(maXa.toString().trim(), { id: maXa, name: tenXa });
+                            if (tenXa) {
+                                const normKey = typeof normalizeCommuneToken === 'function'
+                                    ? normalizeCommuneToken(tenXa) : tenXa.toLowerCase().trim();
+                                lookupMap.set(normKey, { id: maXa, name: tenXa });
+                            }
+                        }
+                    });
+                });
             }
-        }
+
+            // Phân giải danh sách xã
+            const tokens = rawCommunes.split(/[;,]+/).map(t => t.trim()).filter(Boolean);
+            const newCommunes = [];
+            let notFound = 0;
+            tokens.forEach(tok => {
+                let matched = lookupMap.get(tok);
+                if (!matched) {
+                    const norm = typeof normalizeCommuneToken === 'function' ? normalizeCommuneToken(tok) : tok.toLowerCase();
+                    matched = lookupMap.get(norm);
+                }
+                if (matched) {
+                    if (!newCommunes.some(c => c.id === matched.id)) {
+                        newCommunes.push({ id: matched.id, name: matched.name });
+                    }
+                } else {
+                    notFound++;
+                }
+            });
+
+            g.name = newName;
+            g.parentGroup = newParent ? newParent : undefined;
+            g.color = newColor;
+            if (newCommunes.length > 0) {
+                g.communes = newCommunes;
+            }
+
+            saveAreaGroups();
+            drawSelectedGroups();
+            infoPanelEl.classList.add('hidden');
+            showToast('Đã cập nhật nhóm xã!', 'success');
+            if (notFound > 0) showToast(`Không tìm thấy ${notFound} xã. Hãy đảm bảo tỉnh tương ứng đang hiển thị.`, 'warning');
+        });
     }
 
     function deleteGroup(id) {
@@ -5068,6 +6280,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawSelectedGroups() {
         if (!window.groupBoundaryLayer) return;
         window.groupBoundaryLayer.clearLayers();
+        if (window.groupLabelLayer) window.groupLabelLayer.clearLayers();
         
         if (window.selectedGroups.size === 0) return;
 
@@ -5114,11 +6327,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 window.groupBoundaryLayer.addLayer(boundaryLayer);
                 allBounds.extend(boundaryLayer.getBounds());
+
+                // === NHÃN NHÓM XÃ ===
+                // Tính centroid (tâm) của vùng nhóm để đặt nhãn
+                if (window.groupLabelLayer) {
+                    try {
+                        let labelCenter;
+                        if (finalGeojson && finalGeojson.geometry) {
+                            // Dùng turf.centerOfMass cho vị trí chính xác hơn
+                            const centerPoint = turf.centerOfMass(finalGeojson);
+                            labelCenter = L.latLng(centerPoint.geometry.coordinates[1], centerPoint.geometry.coordinates[0]);
+                        } else {
+                            // Fallback: dùng center của bounds
+                            labelCenter = boundaryLayer.getBounds().getCenter();
+                        }
+
+                        const groupColor = group.color || '#ef4444';
+                        const groupLabelMarker = L.marker(labelCenter, {
+                            draggable: true,
+                            icon: L.divIcon({
+                                className: '',
+                                html: `<div style="
+                                    background: ${groupColor};
+                                    color: #ffffff;
+                                    font-family: 'Inter', sans-serif;
+                                    font-size: 14px;
+                                    font-weight: 900;
+                                    padding: 5px 12px;
+                                    border-radius: 6px;
+                                    white-space: nowrap;
+                                    letter-spacing: 0.06em;
+                                    text-transform: uppercase;
+                                    box-shadow: 0 4px 12px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.5);
+                                    border: 2px solid rgba(255,255,255,0.8);
+                                    cursor: move;
+                                    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+                                "><i class='fa-solid fa-object-group' style='margin-right:5px;'></i>${group.name}</div>`,
+                                iconSize: null,
+                                iconAnchor: [0, -15] // Đẩy nhãn nhóm lên trên để không đè nhãn xã (nhãn xã anchor [0, 10])
+                            }),
+                            interactive: true,
+                            zIndexOffset: 1000 // Đảm bảo nhãn nhóm nằm trên nhãn xã
+                        });
+                        window.groupLabelLayer.addLayer(groupLabelMarker);
+                    } catch (labelErr) {
+                        console.warn('Không thể tạo nhãn cho nhóm:', group.name, labelErr);
+                    }
+                }
             }
         });
 
         if (allBounds.isValid()) {
             map.flyToBounds(allBounds, { padding: [50, 50], duration: 1.5 });
+        }
+        
+        if (typeof updateLabels === 'function') {
+            updateLabels();
         }
     }
 </script>
