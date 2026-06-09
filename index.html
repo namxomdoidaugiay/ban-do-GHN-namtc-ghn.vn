@@ -1923,6 +1923,14 @@ body, html {
                             <label><i class="fa-solid fa-eye"></i> ĐỘ TRONG SUỐT: <span id="opacityVal">15%</span></label>
                             <input type="range" id="opacitySlider" min="0" max="100" value="15">
                         </div>
+
+                        <div class="control-group" style="margin-top: 15px; margin-bottom: 0;">
+                            <label><i class="fa-solid fa-palette"></i> MÀU VIỀN COVER: <span id="coverBorderColorVal">#8B0000</span></label>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                                <input type="color" id="coverBorderColorPicker" style="width: 48px; height: 32px; border: 1px solid var(--border-color); border-radius: 4px; padding: 0; background: transparent; cursor: pointer; vertical-align: middle;">
+                                <span style="font-size: 0.85rem; color: var(--text-secondary);">Chọn màu viền bao xã cover</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -2244,6 +2252,7 @@ let provincialDataCache = {}; // Cache dữ liệu tỉnh đã tải để trán
 let selectedFeatures = new Set(); 
 let selectedPoIds = new Set();
 let currentOpacity = 0.15; 
+let coverBorderColor = localStorage.getItem('ghn_cover_border_color') || '#8b0000'; // Mặc định màu đỏ đô 
 let postOfficeLayer = L.markerClusterGroup({
     showCoverageOnHover: false,
     zoomToBoundsOnClick: false,
@@ -3329,7 +3338,7 @@ function selectMultiplePos(ids) {
             selections.push({
                 po: po,
                 communeLayers: matchedLayers,
-                color: palette[index % palette.length]
+                color: coverBorderColor
             });
         }
     });
@@ -3417,7 +3426,7 @@ function selectPostOffice(po) {
             selectedFeatures.add(layer);
             applySelectedStyle(layer);
         });
-        drawPoBoundaryLayer([{ communeLayers: matchedLayers, color: '#38bdf8' }]);
+        drawPoBoundaryLayer([{ communeLayers: matchedLayers, color: coverBorderColor }]);
         if (typeof updateSidebar === 'function') updateSidebar(selectedFeatures);
 
         matchedNames = [...new Set(matchedLayers.map(layer => layer.feature.properties.ten_xa || layer.feature.properties.ma_xa))];
@@ -5213,6 +5222,32 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
 
+        });
+    }
+
+    // Xử lý màu viền cover
+    const coverBorderColorPicker = document.getElementById('coverBorderColorPicker');
+    const coverBorderColorVal = document.getElementById('coverBorderColorVal');
+    if (coverBorderColorPicker) {
+        coverBorderColorPicker.value = coverBorderColor;
+        if (coverBorderColorVal) coverBorderColorVal.innerText = coverBorderColor.toUpperCase();
+        
+        coverBorderColorPicker.addEventListener('input', function() {
+            coverBorderColor = this.value;
+            if (coverBorderColorVal) coverBorderColorVal.innerText = coverBorderColor.toUpperCase();
+            localStorage.setItem('ghn_cover_border_color', coverBorderColor);
+            
+            // Cập nhật ngay lập tức nếu đang hiển thị
+            if (selectedPoIds.size >= 1 && window.poBoundaryLayer) {
+                window.poBoundaryLayer.eachLayer(layer => {
+                    if (typeof layer.setStyle === 'function') {
+                        layer.setStyle({ color: coverBorderColor });
+                        if (layer.options.style && layer.options.style.fillOpacity > 0) {
+                            layer.setStyle({ fillColor: coverBorderColor });
+                        }
+                    }
+                });
+            }
         });
     }
 
