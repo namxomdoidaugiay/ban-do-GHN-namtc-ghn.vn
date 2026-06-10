@@ -5295,6 +5295,9 @@
 
             // 1. Tải dữ liệu tùy chỉnh trước
             await loadFromLocalStorage();
+            if (typeof reloadCurrentSourceData === 'function') {
+                reloadCurrentSourceData();
+            }
 
             // 2. Sau đó mới render bản đồ
             // Mặc định nạp Đồng Nai (Kiến trúc nạp động)
