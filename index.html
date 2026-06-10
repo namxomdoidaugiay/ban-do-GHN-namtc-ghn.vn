@@ -4931,10 +4931,6 @@
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzE5YZR-2zEX-6TpCelM626oGHHTad0Gfw_FNQwOhxtKzLtT800VUf4VMAqMzTg51w-5A/exec';
 
         // Quản lý PO tự thêm (LocalStorage / Data Bridge / Cloud Drive)
-        // URL Web App Google Apps Script của bạn để đồng bộ dữ liệu lên Google Drive
-        const GOOGLE_SCRIPT_URL = 'VUI_LONG_DIEN_LINK_WEB_APP_VAO_DAY';
-
-        // Quản lý PO tự thêm (LocalStorage / Data Bridge / Cloud Drive)
         async function _originalSaveToLocalStorage() {
             const currentDS = getCurrentDataSource();
             const customPOs = postOffices
@@ -5173,7 +5169,7 @@
             }
         }
 
-        // function deleteCustomPO(id) {
+        function deleteCustomPO(id) {
         const index = postOffices.findIndex(po => po.id === id);
         if (index !== -1) {
             postOffices.splice(index, 1);
